@@ -1,0 +1,142 @@
+.history_main_div {
+     background: #FFFFFF;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 24px;
+    width: 80%;
+    height: 100vh;
+    padding: 24px 16px;
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 1000;
+    animation: leftToRight 0.5s ease-in-out forwards;
+}
+
+@keyframes leftToRight {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.search_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 267px;
+    height: 46px;
+    gap: 10px;
+    border-radius: 4px;
+    padding: 8px 16px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 3px 0px #00000033, 0px 2px 2px 0px #0000001F, 0px 0px 2px 0px #00000024;
+
+}
+
+.search_input {
+    width: 80%;
+    height: inherit;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    color: #757575B2;
+    border: none;
+    outline: none;
+}
+
+.history_list_section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: calc(100vh - 150px);
+    gap: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.history_list_section>h1 {
+    font-family: Manrope;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    color: #000000
+}
+
+.history_list_chat_div {
+    width: 95%;
+    height: 40px;
+    gap: 10px;
+    border-radius: 8px;
+    padding: 16px 8px;
+    border: 1px solid #0000004D;
+    font-family: Manrope;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    color: #000000;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.history_list_section>p {
+    width: 100%;
+    font-family: Manrope;
+    font-weight: 500;
+    font-style: Medium;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #000000;
+    margin-top: 5px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.new_chat_button_div {
+    position: sticky;
+    bottom: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1C7C7E;
+    height: 46px;
+    gap: 10px;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 1px 3px 4px 0px #00000040;
+    cursor: pointer;
+
+}
+
+.new_chat_button_div>p {
+    font-family: Manrope;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #FFFFFF;
+    text-align: center;
+    margin-right: 10px;
+}

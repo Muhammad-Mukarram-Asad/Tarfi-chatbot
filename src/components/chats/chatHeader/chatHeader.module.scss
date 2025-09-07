@@ -1,0 +1,28 @@
+.chat_header_main_div{
+    width: 100%;
+    height: 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    box-shadow: -2px 2px 4px 0px #1C7C7E1A;
+}
+
+.chat_header_main_div > img{
+    margin-left: 10px;
+}
+
+.chat_header_main_div > h1{
+    width: 60%;
+    font-family: Manrope;
+font-weight: 600;
+font-style: SemiBold;
+font-size: 24px;
+text-align: center;
+color: #1D1B20;
+}
+
+.chat_header_main_div > p {
+    width: 10%;
+    height: auto;
+}
