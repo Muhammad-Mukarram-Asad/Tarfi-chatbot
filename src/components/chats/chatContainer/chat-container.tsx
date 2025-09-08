@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChatHeader } from "@/components/chats/chatHeader/chat-header";
 import { MessageBubble } from "@/components/chats/messageBubble/message-bubble";
-import { LoadingBubble } from "@/components/chats/loading-bubble";
+import { LoadingBubble, LoadingBubble2, LoadingBubble3, LoadingBubble4 } from "@/components/chats/loadingAnimation/loading-bubble";
 import { ChatInput } from "@/components/chats/chatInput/chat-input";
 import styles from "./chatContainer.module.scss";
 import { HistoryScreen } from "@/components/history/side-panel";
@@ -111,7 +111,7 @@ export function ChatContainer() {
       }
 
       setMessages((prev) => [...prev, responseMessage]);
-    }, 1500);
+    }, 2000);
   };
 
   const handleShowSidePanel = () => {
@@ -165,6 +165,11 @@ export function ChatContainer() {
         </section>
       )}
 
+{/* <LoadingBubble />
+      <LoadingBubble2 />
+      <LoadingBubble3 />
+      <LoadingBubble4 /> */}
+
       {/* Messages */}
       {messages.length > 1 && (
         <div className={styles["messages_container"]}>
@@ -172,7 +177,7 @@ export function ChatContainer() {
             {messages.map((message, index) => (
               <MessageBubble key={index} message={message} />
             ))}
-            {isLoading && <LoadingBubble />}
+            {isLoading && <LoadingBubble2 />}
           </div>
         </div>
       )}

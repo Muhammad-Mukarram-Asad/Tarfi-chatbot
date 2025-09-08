@@ -1,8 +1,8 @@
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar } from "recharts"
+// import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar } from "recharts"
 import styles from "./messageBubble.module.scss"
 import Image from "next/image"
 import botIcon from "../../../..//public/bot-response-icon.svg"
-import { LineChartComponent } from "../chart-components"
+import { BarChartComponent, DataTable, LineChartComponent, MerchantTable } from "../chart-components"
 // Sample data for charts
 const lineChartData = [
   { name: "1", value: 20 },
@@ -20,6 +20,23 @@ const barChartData = [
   { name: "D", value: 45 },
 ]
 
+  const sampleData = [
+    { label: "Revenue", value: "$8,200.00" , isTotal: false},
+    { label: "Expenses", value: "$3,150.00", isTotal: false },
+    { label: "Net Income", value: "$5,050.00", isTotal: false },
+    { label: "Margin", value: "61.6%", isTotal: false },
+    { label: "Total Assets", value: "$45,200.00", isTotal: true },
+  ]
+
+  const merchantData = [
+    { name: "Imtiaz", amount: "35,000.46 PKR" },
+    { name: "Yango", amount: "1200 PKR" },
+    { name: "Habitt", amount: "80,000 PKR" },
+    { name: "Interwood", amount: "45,000 PKR" },
+    { name: "Faisal", amount: "80,000 PKR" },
+    { name: "Anghethi", amount: "10,000 PKR" },
+  ]
+
 interface Message {
   // id: number
   type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant"
@@ -32,7 +49,6 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message }: MessageBubbleProps) {
-  console.log("Rendering message: ", message)
   if (message.isUser) {
     return (
       <main className={styles["user_message_main_div"]}>
@@ -52,32 +68,33 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           }
 
         {message.type === "table" && (
-          <div className="space-y-3">
-            <p className="text-sm mb-3">{"Here's your financial data breakdown:"}</p>
-            <div className="bg-white/10 rounded-lg p-3 space-y-2">
-              <div className="flex justify-between text-xs">
-                <span>Revenue</span>
-                <span>$8,200.00</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span>Expenses</span>
-                <span>$3,150.00</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span>Net Income</span>
-                <span>$5,050.00</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span>Margin</span>
-                <span>61.6%</span>
-              </div>
-              <hr className="border-white/20" />
-              <div className="flex justify-between text-xs font-medium">
-                <span>Total Assets</span>
-                <span>$45,200.00</span>
-              </div>
-            </div>
-          </div>
+          // <div className="space-y-3">
+          //   <p className="text-sm mb-3">{"Here's your financial data breakdown:"}</p>
+          //   <div className="bg-white/10 rounded-lg p-3 space-y-2">
+          //     <div className="flex justify-between text-xs">
+          //       <span>Revenue</span>
+          //       <span>$8,200.00</span>
+          //     </div>
+          //     <div className="flex justify-between text-xs">
+          //       <span>Expenses</span>
+          //       <span>$3,150.00</span>
+          //     </div>
+          //     <div className="flex justify-between text-xs">
+          //       <span>Net Income</span>
+          //       <span>$5,050.00</span>
+          //     </div>
+          //     <div className="flex justify-between text-xs">
+          //       <span>Margin</span>
+          //       <span>61.6%</span>
+          //     </div>
+          //     <hr className="border-white/20" />
+          //     <div className="flex justify-between text-xs font-medium">
+          //       <span>Total Assets</span>
+          //       <span>$45,200.00</span>
+          //     </div>
+          //   </div>
+          // </div>
+          <DataTable data={sampleData} title="Here's your financial data breakdown:" />
         )}
 
         {message.type === "line-chart" && (
@@ -106,53 +123,57 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         )}
 
         {message.type === "bar-chart" && (
-          <div className="space-y-3">
-            <p className="text-sm mb-3">Here`&apos;`s your comparison chart:</p>
-            <div className="bg-white rounded-lg p-3 h-32">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData}>
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-                  <YAxis hide />
-                  <Bar dataKey="value" fill="#14b8a6" radius={[2, 2, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-xs opacity-90">Category C shows highest performance at 80%</p>
-          </div>
+          // <div className="space-y-3">
+          //   <p className="text-sm mb-3">Here`&apos;`s your comparison chart:</p>
+          //   <div className="bg-white rounded-lg p-3 h-32">
+          //     <ResponsiveContainer width="100%" height="100%">
+          //       <BarChart data={barChartData}>
+          //         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+          //         <YAxis hide />
+          //         <Bar dataKey="value" fill="#14b8a6" radius={[2, 2, 0, 0]} />
+          //       </BarChart>
+          //     </ResponsiveContainer>
+          //   </div>
+          //   <p className="text-xs opacity-90">Category C shows highest performance at 80%</p>
+          // </div>
+
+          <BarChartComponent data={barChartData} title="Here's your comparison chart:" description="Category C shows highest performance at 80%" />
         )}
 
       {
         message.type === "merchant" && (
-          <div className={styles["merchant_message_bubble"]}>
-            <p>Your top 5 {message.type === "merchant" ? "merchants" : "vendors"} are:</p>
-             <div className={styles["merchant_list_container"]}>
-              <div className={styles["merchant_list_inner_divs"]}>
-                <span>Imtiaz</span>
-                <span>35,000.46 PKR</span>
-              </div>
-              <div className={styles["merchant_list_inner_divs"]}>
-                <span>Yango</span>
-                <span>1200 PKR</span>
-              </div>
-              <div className={styles["merchant_list_inner_divs"]}>
-                <span>Habitt</span>
-                <span>80,000 PKR</span>
-              </div>
-              <div className={styles["merchant_list_inner_divs"]}>
-                <span>Interwood</span>
-                <span>45,000 PKR</span>
-              </div>
-              <div className={styles["merchant_list_inner_divs"]}>
-                <span>Anghethi</span>
-                <span>10,000 PKR</span>
-              </div>
-              <div className={styles["merchant_list_inner_divs"]}>
-                <span>Nueplex</span>
-                <span>5000 PKR</span>
-              </div>
-            </div>
+          // <div className={styles["merchant_message_bubble"]}>
+          //   <p>Your top 5 {message.type === "merchant" ? "merchants" : "vendors"} are:</p>
+          //    <div className={styles["merchant_list_container"]}>
+          //     <div className={styles["merchant_list_inner_divs"]}>
+          //       <span>Imtiaz</span>
+          //       <span>35,000.46 PKR</span>
+          //     </div>
+          //     <div className={styles["merchant_list_inner_divs"]}>
+          //       <span>Yango</span>
+          //       <span>1200 PKR</span>
+          //     </div>
+          //     <div className={styles["merchant_list_inner_divs"]}>
+          //       <span>Habitt</span>
+          //       <span>80,000 PKR</span>
+          //     </div>
+          //     <div className={styles["merchant_list_inner_divs"]}>
+          //       <span>Interwood</span>
+          //       <span>45,000 PKR</span>
+          //     </div>
+          //     <div className={styles["merchant_list_inner_divs"]}>
+          //       <span>Anghethi</span>
+          //       <span>10,000 PKR</span>
+          //     </div>
+          //     <div className={styles["merchant_list_inner_divs"]}>
+          //       <span>Nueplex</span>
+          //       <span>5000 PKR</span>
+          //     </div>
+          //   </div>
 
-          </div>
+          // </div>
+
+          <MerchantTable data={merchantData} title="Here's your top 5 merchants:" />
         ) 
       }
 

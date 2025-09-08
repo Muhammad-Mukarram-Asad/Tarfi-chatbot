@@ -6,6 +6,7 @@
 
 .user_message_content_div {
     width: max-content;
+    max-width: 300px;
     height: auto;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -19,10 +20,9 @@
 }
 
 .user_message_content_div>p {
-    font-family: Manrope;
     font-weight: 400;
-    font-size: 16px;
-    line-height: 18px;
+    font-size: 14px;
+    line-height: 20px;
     letter-spacing: 0%;
     text-align: left;
     color: #FFFFFF;
@@ -78,8 +78,17 @@
     gap: 20px;
     width: 100%;
     height: auto;
-    padding: 8px 12px;
     display: flex;
     margin: 10px 0;
+}
 
+.merchant_list_inner_divs > span{
+    width: max-content;
+height: auto;
+font-family: Manrope;
+font-weight: 500;
+padding: 8px 12px;
+font-size: 14px;
+letter-spacing: 0;
+color: #000000;
 }

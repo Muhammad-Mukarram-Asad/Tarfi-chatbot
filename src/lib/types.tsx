@@ -11,5 +11,5 @@ export interface ChartData {
 }
 
 export interface TableData {
-  [key: string]: string | number
+  [key: string]: string | number | boolean
 }
