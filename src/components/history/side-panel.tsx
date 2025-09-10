@@ -4,7 +4,7 @@ import styles from "./sidePanel.module.scss";
 import searchIcon from "../../../public/search.svg";
 import newChatIcon from "../../../public/new-chat-icon.svg";
 import Image from "next/image";
-export const HistoryScreen = ({ showSidePanel }: any) => {
+export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
   type chatType = {
     id: number;
     title: string;
@@ -69,7 +69,7 @@ export const HistoryScreen = ({ showSidePanel }: any) => {
         <p>View more</p>
       </section>
 
-      <div className={styles["new_chat_button_div"]}>
+      <div className={styles["new_chat_button_div"]} onClick={handleNewChat}>
         <p>New Chat</p>
         <Image src={newChatIcon} alt="plus_icon" width={24} height={24} />
       </div>

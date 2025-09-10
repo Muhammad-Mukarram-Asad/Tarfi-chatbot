@@ -3,7 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ChatHeader } from "@/components/chats/chatHeader/chat-header";
 import { MessageBubble } from "@/components/chats/messageBubble/message-bubble";
-import { LoadingBubble, LoadingBubble2, LoadingBubble3, LoadingBubble4 } from "@/components/chats/loadingAnimation/loading-bubble";
+import {
+  // LoadingBubble,
+  LoadingBubble2,
+  // LoadingBubble3,
+  // LoadingBubble4,
+} from "@/components/chats/loadingAnimation/loading-bubble";
 import { ChatInput } from "@/components/chats/chatInput/chat-input";
 import styles from "./chatContainer.module.scss";
 import { HistoryScreen } from "@/components/history/side-panel";
@@ -102,8 +107,11 @@ export function ChatContainer() {
         responseMessage = {
           // id: nextId() + 1,
           type: "text",
+          // content:
+          //   "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
           content:
-            "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
+            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet.",
+
           isUser: false,
           color: "border-b border-b-gray-300",
           bgcolor: "bg-white",
@@ -138,7 +146,9 @@ export function ChatContainer() {
       {/* Chat Header */}
       <ChatHeader onClick={handleShowSidePanel} />
 
-      <div ref={menuRef}>{showSidePanel && <HistoryScreen showSidePanel={showSidePanel} />}</div>
+      <div ref={menuRef}>
+        {showSidePanel && <HistoryScreen showSidePanel={showSidePanel} handleNewChat={() => {setMessages([]) ; setShowSidePanel(false)}} />}
+      </div>
 
       {/* Initial Message and Suggestions */}
 
@@ -165,7 +175,7 @@ export function ChatContainer() {
         </section>
       )}
 
-{/* <LoadingBubble />
+      {/* <LoadingBubble />
       <LoadingBubble2 />
       <LoadingBubble3 />
       <LoadingBubble4 /> */}

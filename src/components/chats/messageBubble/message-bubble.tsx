@@ -14,10 +14,9 @@ const lineChartData = [
 ]
 
 const barChartData = [
-  { name: "A", value: 40 },
-  { name: "B", value: 60 },
-  { name: "C", value: 80 },
-  { name: "D", value: 45 },
+  { name: "Aug", value: 3000 },
+  { name: "Sept", value: 4000 },
+  { name: "Oct", value: 5000 },
 ]
 
   const sampleData = [

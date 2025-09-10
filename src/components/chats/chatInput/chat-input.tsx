@@ -34,14 +34,14 @@ export function ChatInput({
     const mainDiv = mainDivRef.current;
 
     if (textarea && mainDiv) {
-      textarea.style.height = "64px"; // Reset textarea height
+      textarea.style.height = "50px"; // Reset textarea height
       const newHeight = Math.min(textarea.scrollHeight, 144); // Calculate new height for textarea
-
+      console.log("new height ", newHeight);
       if (currentText.trim() === "") {
         // Reset heights when the input field is empty
         textarea.style.height = "64px";
         mainDiv.style.height = "64px";
-      } else if (newHeight > 64) {
+      } else if (newHeight > 50) {
         // Adjust heights only when content exceeds one line
         textarea.style.height = `${newHeight}px`;
         mainDiv.style.height = `${Math.min(newHeight + 20, 168)}px`; // Adjust main div height dynamically
