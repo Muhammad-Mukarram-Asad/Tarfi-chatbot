@@ -1,0 +1,6 @@
+    [build]
+      command = "npm run build" # or "yarn build"
+      publish = ".next" # or your custom build output directory
+    
+    [[plugins]]
+      package = "@netlify/plugin-nextjs"

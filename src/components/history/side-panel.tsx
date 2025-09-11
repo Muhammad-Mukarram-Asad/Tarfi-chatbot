@@ -17,6 +17,11 @@ export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
     { id: 4, title: "Investing in stocks" },
     { id: 5, title: "Planning for retirement" },
     { id: 6, title: "Budgeting tips" },
+    { id: 7, title: "Budgeting tips" },
+    { id: 8, title: "Budgeting tips" },
+    { id: 9, title: "Budgeting tips" },
+    { id: 10, title: "Budgeting tips" },
+
   ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

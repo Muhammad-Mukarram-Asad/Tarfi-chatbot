@@ -75,7 +75,8 @@
     line-height: 100%;
     letter-spacing: 0px;
     vertical-align: middle;
-    color: #000000
+    color: #000000;
+    margin-bottom: 8px
 }
 
 .history_list_chat_div {
@@ -83,7 +84,7 @@
     height: 40px;
     gap: 10px;
     border-radius: 8px;
-    padding: 16px 8px;
+    padding: 12px 8px;
     border: 1px solid #0000004D;
     font-family: Manrope;
     font-weight: 400;
@@ -138,5 +139,4 @@
     letter-spacing: 0%;
     color: #FFFFFF;
     text-align: center;
-    margin-right: 10px;
 }

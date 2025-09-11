@@ -1,7 +1,7 @@
 .user_message_main_div {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .user_message_content_div {
@@ -28,16 +28,40 @@
     color: #FFFFFF;
 }
 
+.bot_message_main_div {
+  display: flex;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: flex-start; /* Aligns the content at the top */
+  width: 100%; /* Ensures the container spans the full width */
+  height: auto;
+  margin-bottom: 12px;
+}
+
+.bot_message_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: flex-start; /* Centers the content vertically */
+  width: 100%; /* Ensures the container spans the full width */
+  max-width: 800px; /* Optional: Limits the width for better layout */
+  margin: 0 auto; /* Centers the container within its parent */
+  height: auto;
+}
+
+.bot_message_container > img{
+  margin-left: -6px;
+  margin-bottom: 2px;
+}
+
 .bot_text_message {
-    width: 95%;
+    width: 100%;
     height: auto;
-    font-family: Manrope;
     font-weight: 400;
     font-size: 14px;
-    line-height: 26px;
+    margin-top: 5px;
+    line-height: 24px;
     letter-spacing: 0%;
     color: #000000;
-    margin-top: 5px;
 }
 
 .merchant_message_bubble {
@@ -45,15 +69,15 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    padding: 12px;
     width: 100%;
     height: auto;
+    margin-bottom: 12px;
 }
 
 .merchant_message_bubble>p {
-    font-family: "lato", sans-serif;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 17.5px;
+    margin-top: 5px;
     line-height: 18px;
     letter-spacing: 0;
     color: #000000;
@@ -91,4 +115,15 @@ padding: 8px 12px;
 font-size: 14px;
 letter-spacing: 0;
 color: #000000;
+}
+
+.table_main_div{
+    width: 100%;
+    height: auto;
+    margin-bottom: 12px;
+}
+
+.table_main_div > p{
+    font-size: 17.5px;
+    margin-bottom: 12px;
 }

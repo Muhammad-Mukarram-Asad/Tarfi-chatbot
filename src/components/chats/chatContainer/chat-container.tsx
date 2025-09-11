@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChatHeader } from "@/components/chats/chatHeader/chat-header";
 import { MessageBubble } from "@/components/chats/messageBubble/message-bubble";
 import {
@@ -111,7 +111,6 @@ export function ChatContainer() {
           //   "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
           content:
             "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet.",
-
           isUser: false,
           color: "border-b border-b-gray-300",
           bgcolor: "bg-white",
@@ -142,64 +141,71 @@ export function ChatContainer() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-white max-w-sm mx-auto overflow-hidden">
-      {/* Chat Header */}
-      <ChatHeader onClick={handleShowSidePanel} />
-
+    <React.Fragment>
       <div ref={menuRef}>
-        {showSidePanel && <HistoryScreen showSidePanel={showSidePanel} handleNewChat={() => {setMessages([]) ; setShowSidePanel(false)}} />}
+        {showSidePanel && (
+          <HistoryScreen
+            showSidePanel={showSidePanel}
+            handleNewChat={() => {
+              setMessages([]);
+              setShowSidePanel(false);
+            }}
+          />
+        )}
       </div>
 
-      {/* Initial Message and Suggestions */}
+      <main
+        className={styles[showSidePanel ? "blur_chat_container_main_div" : "chat_container_main_div"]}
+      >
+        {/* Chat Header */}
+        <ChatHeader onClick={handleShowSidePanel} />
 
-      {messages.length === 0 && (
-        <section className={styles["initial_message_section"]}>
-          <div className={styles["initial_message_container"]}>
-            <p className={styles["initial_message_text"]}>
-              Hi there! What can I help you with today Sara? Are you looking to
-              optimize your budgets or do you want to see your overall finances
-            </p>
-          </div>
-
-          <div className={styles["suggestions_container"]}>
-            {suggestionsList?.map((suggestion, index) => (
-              <p
-                key={index}
-                className={styles["suggestion_item"]}
-                onClick={() => setInputValue(suggestion)}
-              >
-                {suggestion}
+        {/* Initial Message and Suggestions */}
+        {messages.length === 0 && (
+          <section className={styles["initial_message_section"]}>
+            <div className={styles["initial_message_container"]}>
+              <p className={styles["initial_message_text"]}>
+                Hi there! What can I help you with today Sara? Are you looking
+                to optimize your budgets or do you want to see your overall
+                finances
               </p>
-            ))}
+            </div>
+
+            <div className={styles["suggestions_container"]}>
+              {suggestionsList?.map((suggestion, index) => (
+                <p
+                  key={index}
+                  className={styles["suggestion_item"]}
+                  onClick={() => setInputValue(suggestion)}
+                >
+                  {suggestion}
+                </p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Messages */}
+        {messages.length > 1 && (
+          <div className={styles["messages_container"]}>
+            <div className={styles["messages_inner_container"]}>
+              {messages.map((message, index) => (
+                <MessageBubble key={index} message={message} />
+              ))}
+              {isLoading && <LoadingBubble2 />}
+            </div>
           </div>
-        </section>
-      )}
+        )}
 
-      {/* <LoadingBubble />
-      <LoadingBubble2 />
-      <LoadingBubble3 />
-      <LoadingBubble4 /> */}
+        {/* Chat Input Component */}
 
-      {/* Messages */}
-      {messages.length > 1 && (
-        <div className={styles["messages_container"]}>
-          <div className={styles["messages_inner_container"]}>
-            {messages.map((message, index) => (
-              <MessageBubble key={index} message={message} />
-            ))}
-            {isLoading && <LoadingBubble2 />}
-          </div>
-        </div>
-      )}
-
-      {/* Chat Input Component */}
-
-      <ChatInput
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={handleSend}
-        disabled={isLoading}
-      />
-    </div>
+        <ChatInput
+          value={inputValue}
+          onChange={setInputValue}
+          onSend={handleSend}
+          disabled={isLoading}
+        />
+      </main>
+    </React.Fragment>
   );
 }
