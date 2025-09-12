@@ -36,7 +36,6 @@ export function ChatInput({
     if (textarea && mainDiv) {
       textarea.style.height = "50px"; // Reset textarea height
       const newHeight = Math.min(textarea.scrollHeight, 144); // Calculate new height for textarea
-      console.log("new height ", newHeight);
       if (currentText.trim() === "") {
         // Reset heights when the input field is empty
         textarea.style.height = "64px";

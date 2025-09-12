@@ -1,6 +1,10 @@
-    [build]
-      command = "npm run build" # or "yarn build"
-      publish = ".next" # or your custom build output directory
-    
-    [[plugins]]
-      package = "@netlify/plugin-nextjs"
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "18"

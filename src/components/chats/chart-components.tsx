@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   LineChart,
   Line,
@@ -43,7 +44,7 @@ export function LineChartComponent({
   ];
 
   return (
-    <div className="space-y-3 mb-12 flex flex-col items-start">
+    <div className="space-y-3 mb-3 flex flex-col items-start">
       <p className="text-sm mb-3 text-center">{title}</p>
       <div className="bg-white pt-3 pb-3  h-64 w-full max-w-4xl">
         <ResponsiveContainer width="100%" height="100%">

@@ -1,4 +1,4 @@
-import Registration from "@/components/login/onboarding-consumer"
+import Registration from "../components/login/onboarding-consumer";
 
 export default function Home() {
   return (
