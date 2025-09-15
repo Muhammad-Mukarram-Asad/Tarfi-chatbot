@@ -97,12 +97,12 @@
 .merchant_list_inner_divs {
     background-color: #fff;
     border-radius: 8px;
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 94%;
     height: auto;
-    display: flex;
     margin: 10px auto;
 }
 
@@ -126,4 +126,8 @@ color: #000000;
 .table_main_div > p{
     font-size: 15px;
     margin-bottom: 16px;
+}
+
+.recharts-wrapper * {
+  outline: none !important;
 }

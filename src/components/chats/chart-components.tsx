@@ -10,6 +10,9 @@ import {
   CartesianGrid,
   Cell,
   LabelList,
+  Legend,
+  Text,
+  Label,
 } from "recharts";
 import type { ChartData, TableData } from "@/lib/types";
 import styles from "./messageBubble/messageBubble.module.scss";
@@ -45,10 +48,20 @@ export function LineChartComponent({
 
   return (
     <div className="space-y-3 mb-3 flex flex-col items-start">
-      <p className="mb-4 text-center" style={{ fontSize: "15px" }}>{title}</p>
+      <p className="mb-4" style={{ fontSize: "15px" }}>{title}</p>
       <div className="bg-white pt-3 pb-3" style={{width: "95%", height: '300px'}}>
-        <ResponsiveContainer width="95%" height="100%">
-          <LineChart data={data1}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data1} style={{ pointerEvents: "none" }}
+          width={window.screen.width-50}
+          height={300}
+          margin={{
+            top: 5,
+            right: 0,
+            left: 0,
+            bottom: 5,
+          }}
+
+          >
             <CartesianGrid
               vertical={false}
               horizontal={true}
@@ -60,14 +73,15 @@ export function LineChartComponent({
               tick={{ fontSize: 14 }}
               tickLine={false}
               axisLine={false}
-            />
+            >
+              <Label value="Years" offset={-5} position="bottom" style={{ fontSize: 14, marginTop: "10px"}} />
+            </XAxis>
             <YAxis
-              tick={{ fontSize: 14 }}
+               tick={{ fontSize: 14, transform: "translate(0, 0)", textAnchor: "end" }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${value / 1000}K`}
+              tickFormatter={(value) => `PKR ${value / 1000}K`}
               tickCount={6}
-              
             />
             <Line
               type="monotone"
@@ -86,7 +100,7 @@ export function LineChartComponent({
           </LineChart>
         </ResponsiveContainer>
       </div>
-      {description && <p className="opacity-90" style={{ fontSize: "15px" }}>{description}</p>}
+      {description && <p style={{ fontSize: "15px" }}>{description}</p>}
     </div>
   );
 }
