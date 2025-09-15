@@ -45,9 +45,9 @@ export function LineChartComponent({
 
   return (
     <div className="space-y-3 mb-3 flex flex-col items-start">
-      <p className="text-sm mb-3 text-center">{title}</p>
-      <div className="bg-white pt-3 pb-3  h-64 w-full max-w-4xl">
-        <ResponsiveContainer width="100%" height="100%">
+      <p className="mb-4 text-center" style={{ fontSize: "15px" }}>{title}</p>
+      <div className="bg-white pt-3 pb-3" style={{width: "95%", height: '300px'}}>
+        <ResponsiveContainer width="95%" height="100%">
           <LineChart data={data1}>
             <CartesianGrid
               vertical={false}
@@ -57,16 +57,17 @@ export function LineChartComponent({
             />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 14 }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 14 }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value / 1000}K`}
               tickCount={6}
+              
             />
             <Line
               type="monotone"
@@ -85,7 +86,7 @@ export function LineChartComponent({
           </LineChart>
         </ResponsiveContainer>
       </div>
-      {description && <p className="text-sm opacity-90">{description}</p>}
+      {description && <p className="opacity-90" style={{ fontSize: "15px" }}>{description}</p>}
     </div>
   );
 }
@@ -110,7 +111,7 @@ export function BarChartComponent({
   ];
   return (
     <div className="mb-3">
-      <p className="text-sm mb-3">{title}</p>
+      <p className="mb-4" style={{ fontSize: "15px" }} >{title}</p>
       <div className="bg-white rounded-lg h-60 mb-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data1}>
@@ -124,13 +125,13 @@ export function BarChartComponent({
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 14 }}
             />
             <YAxis
               dataKey={"value1"}
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 14 }}
               // domain={[0, 60000]} // Define the range explicitly
               tickCount={5} // Ensure enough ticks are displayed
             />
@@ -158,7 +159,7 @@ export function BarChartComponent({
           </BarChart>
         </ResponsiveContainer>
       </div>
-      {description && <p className="text-sm opacity-90">{description}</p>}
+      {description && <p style={{ fontSize: "15px" }}>{description}</p>}
     </div>
   );
 }
