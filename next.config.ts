@@ -1,8 +1,9 @@
-import type { NextConfig } from "next";
+// import withPWA from 'next-pwa';
 
+import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
 
- sassOptions: {
+  sassOptions: {
     includePaths: ['./src'],
   },
   

@@ -1,6 +1,6 @@
 import styles from "./messageBubble.module.scss"
 import Image from "next/image"
-import botIcon from "../../../..//public/bot-response-icon.svg"
+import botIcon from "../../../../public/icons/bot-response-icon.svg"
 import { BarChartComponent, DataTable, LineChartComponent, MerchantTable } from "../chart-components"
 // Sample data for charts
 const lineChartData = [

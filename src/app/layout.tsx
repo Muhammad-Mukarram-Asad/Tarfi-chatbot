@@ -11,6 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <link rel="manifest" href="/public/manifest.json" />
         {/* Import the Manrope font */}
         <link
           rel="stylesheet"

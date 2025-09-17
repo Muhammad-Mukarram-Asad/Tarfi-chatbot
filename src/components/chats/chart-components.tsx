@@ -15,7 +15,7 @@ import {
   Text,
   Label,
 } from "recharts";
-import type { ChartData, TableData } from "@/lib/types";
+import { ChartData, TableData } from "@/lib/types";
 import styles from "./messageBubble/messageBubble.module.scss";
 interface DataTableProps {
   data: TableData[];

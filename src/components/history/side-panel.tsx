@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import styles from "./sidePanel.module.scss";
-import searchIcon from "../../../public/search.svg";
-import newChatIcon from "../../../public/new-chat-icon.svg";
+import searchIcon from "../../../public/icons/search.svg";
+import newChatIcon from "../../../public/icons/new-chat-icon.svg";
 import Image from "next/image";
 export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
   type chatType = {

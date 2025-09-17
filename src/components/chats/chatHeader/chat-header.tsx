@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image"
 import styles from './chatHeader.module.scss'
-import menuIcon from "../../../../public/menu-icon-header.svg"
+import menuIcon from "../../../../public/icons/menu-icon-header.svg"
 export function ChatHeader(props:any) {
   const {onClick} = props;
   return (

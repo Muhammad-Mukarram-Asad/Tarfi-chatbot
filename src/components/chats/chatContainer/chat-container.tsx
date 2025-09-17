@@ -6,7 +6,7 @@ import { MessageBubble } from "@/components/chats/messageBubble/message-bubble";
 import { ChatInput } from "@/components/chats/chatInput/chat-input";
 import styles from "./chatContainer.module.scss";
 import { HistoryScreen } from "@/components/history/side-panel";
-import botIcon from "../../../../public/bot-response-icon.svg";
+import botIcon from "../../../../public/icons/bot-response-icon.svg";
 import Image from "next/image";
 // import {LoadingBubble2} from "@/components/chats/loadingAnimation/loading-bubble";
 
@@ -165,7 +165,7 @@ export function ChatContainer() {
         currentIndex =
           currentIndex === waiting.length - 1 ? 0 : currentIndex + 1;
         setCurrentMessage(waiting[currentIndex]);
-      }, 2500);
+      }, 1250);
     }
     // Cleanup interval on unmount or when isLoading changes
     return () => {
