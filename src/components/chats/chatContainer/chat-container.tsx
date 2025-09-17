@@ -3,15 +3,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChatHeader } from "@/components/chats/chatHeader/chat-header";
 import { MessageBubble } from "@/components/chats/messageBubble/message-bubble";
-import {
-  // LoadingBubble,
-  LoadingBubble2,
-  // LoadingBubble3,
-  // LoadingBubble4,
-} from "@/components/chats/loadingAnimation/loading-bubble";
 import { ChatInput } from "@/components/chats/chatInput/chat-input";
 import styles from "./chatContainer.module.scss";
 import { HistoryScreen } from "@/components/history/side-panel";
+import botIcon from "../../../../public/bot-response-icon.svg";
+import Image from "next/image";
+// import {LoadingBubble2} from "@/components/chats/loadingAnimation/loading-bubble";
 
 interface Message {
   // id: number;
@@ -40,7 +37,6 @@ export function ChatContainer() {
 
     // Add user message
     const userMessage: Message = {
-      // id: nextId(),
       type: "text",
       content: inputValue,
       isUser: true,
@@ -64,7 +60,6 @@ export function ChatContainer() {
         currentInput.toLowerCase().includes("data")
       ) {
         responseMessage = {
-          // id: nextId()+ 1,
           type: "table",
           isUser: false,
           color: "border-b border-b-gray-300",
@@ -75,7 +70,6 @@ export function ChatContainer() {
         currentInput.toLowerCase().includes("trend")
       ) {
         responseMessage = {
-          // id: nextId() + 1,
           type: "line-chart",
           isUser: false,
           color: "border-b border-b-gray-300",
@@ -86,7 +80,6 @@ export function ChatContainer() {
         currentInput.toLowerCase().includes("compare")
       ) {
         responseMessage = {
-          // id: nextId() + 1,
           type: "bar-chart",
           isUser: false,
           color: "border-b border-b-gray-300",
@@ -97,7 +90,6 @@ export function ChatContainer() {
         currentInput.toLowerCase().includes("vendor")
       ) {
         responseMessage = {
-          // id: nextId() + 1,
           type: "merchant",
           isUser: false,
           color: "border-b border-b-gray-300",
@@ -105,7 +97,6 @@ export function ChatContainer() {
         };
       } else {
         responseMessage = {
-          // id: nextId() + 1,
           type: "text",
           // content:
           //   "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
@@ -118,7 +109,7 @@ export function ChatContainer() {
       }
 
       setMessages((prev) => [...prev, responseMessage]);
-    }, 2000);
+    }, 5000);
   };
 
   const handleShowSidePanel = () => {
@@ -140,6 +131,52 @@ export function ChatContainer() {
     };
   }, []);
 
+  // make a ref for automatic scrolling so that the chat container always scrolls to the bottom
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const waiting = [
+    "Thinking...",
+    "Analyzing...",
+    "Processing...",
+    "Giving you results...",
+  ];
+
+  const [currentMessage, setCurrentMessage] = useState<string>("");
+
+  // Use useEffect to handle the interval logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    let currentIndex = 0;
+
+    if (isLoading) {
+      // Set initial message
+      setCurrentMessage(waiting[0]);
+
+      // Create interval to cycle through messages
+      interval = setInterval(() => {
+        currentIndex =
+          currentIndex === waiting.length - 1 ? 0 : currentIndex + 1;
+        setCurrentMessage(waiting[currentIndex]);
+      }, 2500);
+    }
+    // Cleanup interval on unmount or when isLoading changes
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+
+    // eslint-disable-next-line
+  }, [isLoading]);
+
   return (
     <React.Fragment>
       <div ref={menuRef}>
@@ -155,13 +192,19 @@ export function ChatContainer() {
       </div>
 
       <main
-        className={styles[showSidePanel ? "blur_chat_container_main_div" : "chat_container_main_div"]}
+        className={
+          styles[
+            showSidePanel
+              ? "blur_chat_container_main_div"
+              : "chat_container_main_div"
+          ]
+        }
       >
         {/* Chat Header */}
         <ChatHeader onClick={handleShowSidePanel} />
 
         {/* Initial Message and Suggestions */}
-        {messages.length === 0 && (
+        {messages.length <= 1 && (
           <section className={styles["initial_message_section"]}>
             <div className={styles["initial_message_container"]}>
               <p className={styles["initial_message_text"]}>
@@ -186,13 +229,24 @@ export function ChatContainer() {
         )}
 
         {/* Messages */}
-        {messages.length > 1 && (
-          <div className={styles["messages_container"]}>
+        {messages.length >= 2 && (
+          <div className={styles["messages_container"]} ref={chatContainerRef}>
             <div className={styles["messages_inner_container"]}>
               {messages.map((message, index) => (
                 <MessageBubble key={index} message={message} />
               ))}
-              {isLoading && <LoadingBubble2 />}
+
+              {isLoading && (
+                <div className={styles["thinking_message"]}>
+                  <Image
+                    src={botIcon}
+                    width={32}
+                    height={32}
+                    alt="bot_icon_response"
+                  />
+                  <p>{currentMessage} </p>
+                </div>
+              )}
             </div>
           </div>
         )}

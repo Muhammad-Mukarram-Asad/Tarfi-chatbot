@@ -165,16 +165,34 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
     setShowScrollbar(false)
 
     if (textarea && mainDiv) {
-      textarea.style.height = "auto"
-      const scrollHeight = textarea.scrollHeight
-      const newHeight = Math.min(scrollHeight, 144)
+      const canvas = document.createElement("canvas")
+      const context = canvas.getContext("2d")
+      if (context) {
+        // Set font properties to match textarea
+        context.font = "500 15px system-ui, -apple-system, sans-serif"
 
-      if (currentText.trim() === "") {
-        textarea.style.height = "50px"
-        mainDiv.style.height = "64px"
-      } else {
-        textarea.style.height = `${Math.max(newHeight, 50)}px`
-        mainDiv.style.height = `${Math.min(newHeight + 14, 158)}px`
+        // Measure actual text width
+        const textWidth = context.measureText(currentText).width
+        const availableWidth = textarea.clientWidth - 24 // Account for padding
+
+        const baseHeight = 50
+        const lineHeight = 22
+
+        if (currentText.trim() === "") {
+          // Empty input
+          textarea.style.height = `${baseHeight}px`
+          mainDiv.style.height = "64px"
+        } else if (textWidth <= availableWidth) {
+          // Text fits in single line - keep base height
+          textarea.style.height = `${baseHeight}px`
+          mainDiv.style.height = "64px"
+        } else {
+          // Text needs to wrap - calculate required lines
+          const estimatedLines = Math.ceil(textWidth / availableWidth)
+          const newHeight = Math.min(baseHeight + (estimatedLines - 1) * lineHeight, 144)
+          textarea.style.height = `${newHeight}px`
+          mainDiv.style.height = `${newHeight + 14}px`
+        }
       }
 
       if (!hasUserScrolled) {
@@ -204,47 +222,57 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
         const textarea = textareaRef.current
         const mainDiv = mainDivRef.current
 
-        // Reset scroll states to prevent scrollbar from showing
         setHasUserScrolled(false)
         setShowScrollbar(false)
 
         if (mainDiv) {
-          textarea.style.height = "auto"
-          const scrollHeight = textarea.scrollHeight
-          const newHeight = Math.min(scrollHeight, 144)
+          const currentText = textarea.value
 
-          if (textarea.value.trim() === "") {
-            textarea.style.height = "50px"
-            mainDiv.style.height = "64px"
-          } else {
-            textarea.style.height = `${Math.max(newHeight, 50)}px`
-            mainDiv.style.height = `${Math.min(newHeight + 14, 158)}px`
+          const canvas = document.createElement("canvas")
+          const context = canvas.getContext("2d")
+          if (context) {
+            context.font = "500 15px system-ui, -apple-system, sans-serif"
+            const textWidth = context.measureText(currentText).width
+            const availableWidth = textarea.clientWidth - 24
+
+            const baseHeight = 50
+            const lineHeight = 22
+
+            if (currentText.trim() === "") {
+              textarea.style.height = `${baseHeight}px`
+              mainDiv.style.height = "64px"
+            } else if (textWidth <= availableWidth) {
+              textarea.style.height = `${baseHeight}px`
+              mainDiv.style.height = "64px"
+            } else {
+              const estimatedLines = Math.ceil(textWidth / availableWidth)
+              const newHeight = Math.min(baseHeight + (estimatedLines - 1) * lineHeight, 144)
+              textarea.style.height = `${newHeight}px`
+              mainDiv.style.height = `${newHeight + 14}px`
+            }
           }
 
-          // Don't auto-scroll on paste, let user see the beginning
           textarea.scrollTop = 0
         }
       }
     }, 0)
   }
 
-  const characterCount = currentInput?.length
-  const isNearLimit = characterCount > 250
-  const isAtLimit = characterCount >= 300
-
-  console.log("currentInput", currentInput)
+  // const characterCount = currentInput?.length
+  // const isNearLimit = characterCount > 250
+  // const isAtLimit = characterCount >= 300
 
   return (
     <main ref={mainDivRef} className={styles["chat_input_main_div"]}>
       <div className={styles["chat_input_textarea_div"]}>
         <textarea
           ref={textareaRef}
-          onInput={handleInput}
-          onFocus={handleInput}
+          // onInput={handleInput}
+          // onFocus={handleInput}
           onPaste={handlePaste}
           onScroll={handleScroll}
           value={value}
-          onChange={(e) => {
+        onChange={(e) => {
             onChange(e.target.value)
             setCurrentInput(e.target.value)
             handleInput(e)
@@ -252,7 +280,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           placeholder="ask me anything..."
           className={`${styles["chat_input_textarea"]} ${showScrollbar ? styles["show_scrollbar"] : ""}`}
           onKeyUp={handleKeyPress}
-          maxLength={300}
+          // maxLength={300}
           disabled={disabled}
           aria-label="Chat message input"
           aria-describedby="char-count"
@@ -269,14 +297,14 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
         </div>
       </div>
 
-      {characterCount > 0 && (
+      {/* {characterCount > 0 && (
         <div
           id="char-count"
           className={`${styles["char_count"]} ${isNearLimit ? styles["char_count_warning"] : ""} ${isAtLimit ? styles["char_count_limit"] : ""}`}
         >
           {characterCount}/300
         </div>
-      )}
+      )} */}
     </main>
   )
 }

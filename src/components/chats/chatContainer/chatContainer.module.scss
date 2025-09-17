@@ -1,5 +1,5 @@
 // flex flex-col h-screen bg-white max-w-sm mx-auto overflow-hidden
-.chat_container_main_div{
+.chat_container_main_div, .blur_chat_container_main_div{
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -91,10 +91,35 @@
     width: 100%;
     height: calc(100vh - 250px); // adjust based on header and input heights
     box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 
 .messages_inner_container {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.thinking_message{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.thinking_message > img{
+    margin-left: -6px;
+    margin-bottom: 2px;
+}
+
+.thinking_message > p {
+    width: 100%;
+    height: auto;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: #000000;
 }

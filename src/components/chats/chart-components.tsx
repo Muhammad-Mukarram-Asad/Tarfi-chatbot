@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   LineChart,
@@ -46,18 +47,25 @@ export function LineChartComponent({
     { name: "6", value1: 50000, value2: 45000 },
   ];
 
+  const formatCurrency = (value:any) => {
+  if (value >= 1000) {
+    return `PKR ${value / 1000}k`;
+  }
+  return `PKR ${value}`;
+};
+
   return (
     <div className="space-y-3 mb-3 flex flex-col items-start">
       <p className="mb-4" style={{ fontSize: "15px" }}>{title}</p>
       <div className="bg-white pt-3 pb-3" style={{width: "95%", height: '300px'}}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data1} style={{ pointerEvents: "none" }}
-          width={window.screen.width-50}
+          width={window.screen.width-10}
           height={300}
           margin={{
             top: 5,
-            right: 0,
-            left: 0,
+            right: 20,
+            left: 20,
             bottom: 5,
           }}
 
@@ -70,19 +78,25 @@ export function LineChartComponent({
             />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 14 }}
+              tick={{ fontSize: 14, textAnchor: "end", fill: "black" }}
               tickLine={false}
               axisLine={false}
             >
-              <Label value="Years" offset={-5} position="bottom" style={{ fontSize: 14, marginTop: "10px"}} />
             </XAxis>
             <YAxis
-               tick={{ fontSize: 14, transform: "translate(0, 0)", textAnchor: "end" }}
+              tick={{
+    fontSize: 14,
+    textAnchor: "end",
+    fill: "black",
+    transform: "rotate(0)"  // Ensures horizontal text
+  }}
               tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `PKR ${value / 1000}K`}
+              axisLine={true}
+              tickFormatter={formatCurrency}
               tickCount={6}
+              width="auto" 
             />
+
             <Line
               type="monotone"
               dataKey="value1"
@@ -100,6 +114,7 @@ export function LineChartComponent({
           </LineChart>
         </ResponsiveContainer>
       </div>
+      <p style={{fontSize: "15px", textAlign:"center", width: "100%", "marginLeft": "20px", marginTop: "-30px"}}>Years</p>
       {description && <p style={{ fontSize: "15px" }}>{description}</p>}
     </div>
   );
@@ -128,7 +143,7 @@ export function BarChartComponent({
       <p className="mb-4" style={{ fontSize: "15px" }} >{title}</p>
       <div className="bg-white rounded-lg h-60 mb-0">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data1}>
+          <BarChart data={data1} style={{ pointerEvents: "none" }}>
             <CartesianGrid
               vertical={false}
               horizontal={true}
@@ -146,7 +161,7 @@ export function BarChartComponent({
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 14 }}
-              // domain={[0, 60000]} // Define the range explicitly
+              tickFormatter={(value) => `PKR ${Number(value) / 1000}k`}
               tickCount={5} // Ensure enough ticks are displayed
             />
             <Bar dataKey="value2" radius={[8, 8, 0, 0]}>
