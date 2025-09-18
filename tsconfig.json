@@ -21,6 +21,14 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+     "typeRoots": [
+      "./node_modules/@types", 
+      "./typings"
+    ],
+     "types": [
+      "next", 
+      "next-pwa"  // Add this line to inform TypeScript about next-pwa types
+    ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
