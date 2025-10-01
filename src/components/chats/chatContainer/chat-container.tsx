@@ -8,10 +8,9 @@ import styles from "./chatContainer.module.scss";
 import { HistoryScreen } from "@/components/history/side-panel";
 import botIcon from "../../../../public/icons/bot-response-icon.svg";
 import Image from "next/image";
-// import {LoadingBubble2} from "@/components/chats/loadingAnimation/loading-bubble";
+import { useSocket } from "@/hooks/useSocket"; // Import the socket hook
 
 interface Message {
-  // id: number;
   type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant";
   content?: string;
   isUser: boolean;
@@ -31,9 +30,91 @@ export function ChatContainer() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSidePanel, setShowSidePanel] = useState(false);
+  // Initialize socket connection
+  const { isConnected, sendMessage } = useSocket();
 
-  const handleSend = () => {
-    if (!inputValue.trim() || isLoading) return;
+  // const handleSend = () => {
+  //   if (!inputValue.trim() || isLoading) return;
+
+  //   // Add user message
+  //   const userMessage: Message = {
+  //     type: "text",
+  //     content: inputValue,
+  //     isUser: true,
+  //     color: "border-b border-b-gray-300",
+  //     bgcolor: "bg-white",
+  //   };
+
+  //   setMessages((prev) => [...prev, userMessage]);
+  //   const currentInput = inputValue;
+  //   setInputValue("");
+  //   setIsLoading(true);
+
+  //   // Simulate AI response
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+
+  //     // Determine response type based on input
+  //     let responseMessage: Message;
+  //     if (
+  //       currentInput.toLowerCase().includes("table") ||
+  //       currentInput.toLowerCase().includes("data")
+  //     ) {
+  //       responseMessage = {
+  //         type: "table",
+  //         isUser: false,
+  //         color: "border-b border-b-gray-300",
+  //         bgcolor: "bg-white",
+  //       };
+  //     } else if (
+  //       currentInput.toLowerCase().includes("line") ||
+  //       currentInput.toLowerCase().includes("trend")
+  //     ) {
+  //       responseMessage = {
+  //         type: "line-chart",
+  //         isUser: false,
+  //         color: "border-b border-b-gray-300",
+  //         bgcolor: "bg-white",
+  //       };
+  //     } else if (
+  //       currentInput.toLowerCase().includes("bar") ||
+  //       currentInput.toLowerCase().includes("compare")
+  //     ) {
+  //       responseMessage = {
+  //         type: "bar-chart",
+  //         isUser: false,
+  //         color: "border-b border-b-gray-300",
+  //         bgcolor: "bg-white",
+  //       };
+  //     } else if (
+  //       currentInput.toLowerCase().includes("merchant") ||
+  //       currentInput.toLowerCase().includes("vendor")
+  //     ) {
+  //       responseMessage = {
+  //         type: "merchant",
+  //         isUser: false,
+  //         color: "border-b border-b-gray-300",
+  //         bgcolor: "bg-white",
+  //       };
+  //     } else {
+  //       responseMessage = {
+  //         type: "text",
+  //         // content:
+  //         //   "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
+  //         content:
+  //           "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet.",
+  //         isUser: false,
+  //         color: "border-b border-b-gray-300",
+  //         bgcolor: "bg-white",
+  //       };
+  //     }
+
+  //     setMessages((prev) => [...prev, responseMessage]);
+  //   }, 5000);
+  // };
+
+  const handleSend = async () => {
+    if (!inputValue.trim() || isLoading || !isConnected) return;
 
     // Add user message
     const userMessage: Message = {
@@ -49,69 +130,31 @@ export function ChatContainer() {
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Send message to backend via Socket.IO
+      const botResponse = await sendMessage(currentInput);
+      console.log("Bot response received:", botResponse);
+      
+      // Add bot response to messages
+      setMessages((prev) => [...prev, botResponse]);
+      
+    } catch (error) {
+      console.error("Error sending message:", error);
+      
+      // Fallback error message
+      const errorMessage: Message = {
+        type: "text",
+        content: "Sorry, I couldn't process your request. Please try again.",
+        isUser: false,
+        color: "border-b border-b-gray-300",
+        bgcolor: "bg-white",
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-
-      // Determine response type based on input
-      let responseMessage: Message;
-      if (
-        currentInput.toLowerCase().includes("table") ||
-        currentInput.toLowerCase().includes("data")
-      ) {
-        responseMessage = {
-          type: "table",
-          isUser: false,
-          color: "border-b border-b-gray-300",
-          bgcolor: "bg-white",
-        };
-      } else if (
-        currentInput.toLowerCase().includes("line") ||
-        currentInput.toLowerCase().includes("trend")
-      ) {
-        responseMessage = {
-          type: "line-chart",
-          isUser: false,
-          color: "border-b border-b-gray-300",
-          bgcolor: "bg-white",
-        };
-      } else if (
-        currentInput.toLowerCase().includes("bar") ||
-        currentInput.toLowerCase().includes("compare")
-      ) {
-        responseMessage = {
-          type: "bar-chart",
-          isUser: false,
-          color: "border-b border-b-gray-300",
-          bgcolor: "bg-white",
-        };
-      } else if (
-        currentInput.toLowerCase().includes("merchant") ||
-        currentInput.toLowerCase().includes("vendor")
-      ) {
-        responseMessage = {
-          type: "merchant",
-          isUser: false,
-          color: "border-b border-b-gray-300",
-          bgcolor: "bg-white",
-        };
-      } else {
-        responseMessage = {
-          type: "text",
-          // content:
-          //   "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
-          content:
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet.",
-          isUser: false,
-          color: "border-b border-b-gray-300",
-          bgcolor: "bg-white",
-        };
-      }
-
-      setMessages((prev) => [...prev, responseMessage]);
-    }, 5000);
+    }
   };
-
   const handleShowSidePanel = () => {
     setShowSidePanel(!showSidePanel);
   };
@@ -203,8 +246,21 @@ export function ChatContainer() {
         {/* Chat Header */}
         <ChatHeader onClick={handleShowSidePanel} />
 
+         {/* Connection Status Indicator */}
+        {!isConnected && (
+          <div style={{
+            padding: '8px',
+            textAlign: 'center',
+            backgroundColor: '#fee',
+            color: '#c00',
+            fontSize: '14px'
+          }}>
+            ⚠️ Connecting to server...
+          </div>
+        )}
+
         {/* Initial Message and Suggestions */}
-        {messages.length <= 1 && (
+        {messages.length === 0 && (
           <section className={styles["initial_message_section"]}>
             <div className={styles["initial_message_container"]}>
               <p className={styles["initial_message_text"]}>
@@ -229,7 +285,7 @@ export function ChatContainer() {
         )}
 
         {/* Messages */}
-        {messages.length >= 2 && (
+        {messages.length > 0 && (
           <div className={styles["messages_container"]} ref={chatContainerRef}>
             <div className={styles["messages_inner_container"]}>
               {messages.map((message, index) => (
@@ -253,11 +309,11 @@ export function ChatContainer() {
 
         {/* Chat Input Component */}
 
-        <ChatInput
+      <ChatInput
           value={inputValue}
           onChange={setInputValue}
           onSend={handleSend}
-          disabled={isLoading}
+          disabled={isLoading || !isConnected}
         />
       </main>
     </React.Fragment>
