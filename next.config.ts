@@ -42,6 +42,7 @@
 
     export default withPWA({
       dest: 'public', // The output directory for the service worker and manifest
+       disable: process.env.NODE_ENV === 'development', // Disable in dev mode
       register: true, // Register the service worker
       skipWaiting: true, // Activate the new service worker as soon as it's fetched
       // disable: process.env.NODE_ENV === 'development', // Optional: Disable PWA in development

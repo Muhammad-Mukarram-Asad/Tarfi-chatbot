@@ -36,8 +36,9 @@ const barChartData = [
   ]
 
 interface Message {
-  // id: number
-  type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant"
+  // type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant"
+  type: string,
+
   content?: string
   isUser: boolean
 }
@@ -61,8 +62,14 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <main className={styles["bot_message_main_div"]}>
       <div className={styles["bot_message_container"]}>
         <Image src={botIcon} width={32} height={32} alt="bot_icon_response" />
-        {message.type === "text" && 
-          <p className={styles["bot_text_message"]}>{message.content}</p>
+        {message.type === "text" || message.type === "general" &&
+          <div className={styles["bot_text_message"]} style={{ whiteSpace: 'pre-line' }}>
+             {message?.content?.split('\n\n').map((paragraph, index) => (
+    <p key={index} className={index > 0 ? 'mt-4 font-semibold' : ''}>
+      {paragraph}
+    </p>
+  ))}
+          </div>
           }
 
         {message.type === "table" && (

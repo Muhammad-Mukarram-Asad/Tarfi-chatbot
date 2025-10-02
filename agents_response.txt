@@ -1,0 +1,194 @@
+
+
+1) General Response:
+{
+  "response": "I am your Comprehensive Financial Advisor and Personal CFO. My role is to provide holistic financial guidance, strategic oversight, and personalized advice based on your actual financial data. I assist with budgeting, financial planning, investment strategies, debt management, and goal setting to help you achieve financial success.",
+  "timestamp": "2025-10-02T17:57:00+05:00",
+  "data": {
+    "next_question": "How can I assist you with your financial goals or concerns today?"
+  }
+}
+
+2) Goal Response:
+
+ {
+  "response": "Your savings goals include an Emergency Fund (62.66% complete), Vacation Fund (72.81% complete), Home Down Payment (41.81% complete), and New Car (40.19% complete). Completing the Emergency and Vacation Funds from Savings (PKR 268,256 total) will free up PKR 36,749/month for larger goals. Current monthly funding needs for all goals total PKR 417,626, which exceeds your cash flow capacity.",
+  "timestamp": "2025-10-02T17:57:00+05:00",
+  "data": {
+    "visualizations": [
+      {
+        "id": "savings_progress",
+        "type": "progress",
+        "title": "Savings Goals Progress",
+        "data": {
+          "goals": [
+            {
+              "label": "Emergency Fund",
+              "current": 313308,
+              "target": 500000,
+              "percentage": 62.66,
+              "color": "#4BC0C0"
+            },
+            {
+              "label": "Vacation Fund",
+              "current": 218436,
+              "target": 300000,
+              "percentage": 72.81,
+              "color": "#FF6384"
+            },
+            {
+              "label": "Home Down Payment",
+              "current": 2090676,
+              "target": 5000000,
+              "percentage": 41.81,
+              "color": "#36A2EB"
+            },
+            {
+              "label": "New Car",
+              "current": 803851,
+              "target": 2000000,
+              "percentage": 40.19,
+              "color": "#FFCE56"
+            }
+          ]
+        },
+        "config": {
+          "responsive": true,
+          "show_percentages": true,
+          "show_values": true
+        }
+      }
+    ],
+    "recommendations": [
+      "Complete Emergency and Vacation Funds from Savings (PKR 268,256 total) to free up PKR 36,749/month.",
+      "Extend Home Down Payment and New Car timelines by 12 months each to reduce monthly funding needs.",
+      "Cut discretionary spending (Travel, Shopping, Fuel) by 30% to free up PKR 28,937/month for goals.",
+      "Reassess income sources to bridge the gap between cash flow and monthly goal funding needs."
+    ],
+    "next_question": "Would you like to focus on completing your Emergency Fund or Vacation Fund first?"
+  }
+}
+
+3) Education Agent:
+
+ {
+  "response": "Financial education involves understanding key concepts like budgeting, saving, investing, and debt management. For example, your current financial health shows areas to improve, such as reducing discretionary spending (Travel, Shopping) and automating savings for goals like Emergency Fund and Vacation Fund. Learning these principles helps you make informed decisions.",
+  "timestamp": "2025-10-02T17:57:00+05:00",
+  "data": {
+    "visualizations": [
+      {
+        "id": "financial_education_focus",
+        "type": "bar",
+        "title": "Key Areas for Financial Education",
+        "data": {
+          "x_axis": {
+            "label": "Topics",
+            "values": ["Budgeting", "Saving", "Investing", "Debt Management"]
+          },
+          "y_axis": {
+            "label": "Importance (1-10)",
+            "min": 0,
+            "max": 10,
+            "step": 1
+          },
+          "datasets": [
+            {
+              "label": "Your Focus Areas",
+              "data": [8, 9, 7, 6],
+              "color": "#36A2EB"
+            }
+          ]
+        },
+        "config": {
+          "responsive": true,
+          "show_legend": false
+        }
+      }
+    ],
+    "recommendations": [
+      "Focus on budgeting by setting caps for discretionary categories like Travel and Shopping.",
+      "Automate savings for your Emergency Fund and Vacation Fund to ensure consistent progress.",
+      "Learn about investment options to grow your wealth, starting with low-risk instruments.",
+      "Understand debt management to avoid interest costs and free up cash for goals."
+    ],
+    "next_question": "Would you like to dive deeper into budgeting or investment education?"
+  }
+}
+
+4) Finance Agent Response/ Budget Question:
+
+ {
+  "response": "Based on your spending patterns, I recommend setting up budgets for key categories like Travel, Fuel & Maintenance, Shopping, Medical, and Bills & Utilities. These categories account for 78.5% of your total expenses. Implementing a 10-15% cut in discretionary spending (e.g., Travel and Shopping) can save PKR 19,810/month, which can be redirected toward your financial goals.",
+  "timestamp": "2025-10-02T17:57:00+05:00",
+  "data": {
+    "visualizations": [
+      {
+        "id": "spending_breakdown",
+        "type": "pie",
+        "title": "Spending Breakdown by Category (Last 3 Months)",
+        "data": {
+          "labels": ["Travel", "Fuel & Maintenance", "Shopping", "Medical", "Bills & Utilities", "Other"],
+          "values": [127909, 111539, 87099, 77453, 62302, 127934],
+          "colors": ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#C9CBCF"]
+        },
+        "config": {
+          "responsive": true,
+          "show_legend": true
+        }
+      }
+    ],
+    "recommendations": [
+      "Set monthly budgets: Travel (PKR 38,372), Fuel & Maintenance (PKR 33,462), Shopping (PKR 26,130), Medical (PKR 23,236), Bills & Utilities (PKR 18,690).",
+      "Add new budgets for Medical and Transport to cover unbudgeted spending.",
+      "Implement a 10% cut in discretionary categories like Travel and Shopping to save PKR 19,810/month.",
+      "Enable alerts for 80% utilization in each category to prevent overspending."
+    ],
+    "next_question": "Would you like me to automate these budgets and set up alerts for overspending?"
+  }
+}
+
+5) Debt Agent Response:
+
+{
+  "response": "Taking a student loan could add financial strain given your current negative cash flow and limited liquidity. With no income in the last two months and liquid assets covering only 2.21 months of expenses, adding debt may delay your financial goals. Instead, consider scholarships, part-time work, or using savings to fund education.",
+  "timestamp": "2025-10-02T17:57:00+05:00",
+  "data": {
+    "visualizations": [
+      {
+        "id": "debt_vs_liquidity",
+        "type": "bar",
+        "title": "Impact of Student Loan on Liquidity",
+        "data": {
+          "x_axis": {
+            "label": "Scenarios",
+            "values": ["Current Liquidity", "With Student Loan"]
+          },
+          "y_axis": {
+            "label": "Months of Coverage",
+            "min": 0,
+            "max": 3,
+            "step": 0.5
+          },
+          "datasets": [
+            {
+              "label": "Liquidity Coverage",
+              "data": [2.21, 1.8],
+              "color": ["#36A2EB", "#FF6384"]
+            }
+          ]
+        },
+        "config": {
+          "responsive": true,
+          "show_legend": false
+        }
+      }
+    ],
+    "recommendations": [
+      "Avoid taking a student loan unless absolutely necessary due to current negative cash flow.",
+      "Explore scholarships, grants, or part-time work to fund education.",
+      "Use savings strategically to minimize debt while maintaining liquidity.",
+      "Focus on stabilizing income and building a stronger financial cushion before taking on new debt."
+    ],
+    "next_question": "Would you like me to calculate the monthly repayment impact of a student loan on your budget?"
+  }
+}

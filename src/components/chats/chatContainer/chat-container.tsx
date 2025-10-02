@@ -10,9 +10,13 @@ import botIcon from "../../../../public/icons/bot-response-icon.svg";
 import Image from "next/image";
 import { useSocket } from "@/hooks/useSocket"; // Import the socket hook
 
-interface Message {
-  type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant";
+interface Message extends Bubble {
+  // type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant";
+  type: string;
   content?: string;
+}
+
+interface Bubble {
   isUser: boolean;
   color: string;
   bgcolor: string;
@@ -133,14 +137,30 @@ export function ChatContainer() {
     try {
       // Send message to backend via Socket.IO
       const botResponse = await sendMessage(currentInput);
-      console.log("Bot response received:", botResponse);
-      
+      const parsedBotResponse = JSON.parse(
+        botResponse?.content?.response as string
+      );
+      console.log("Bot response data :", botResponse);
+      console.log("Parsed response => ", parsedBotResponse);
+      // console.log("Parsed response => ", parsedBotResponse?.response);
+      // console.log("Parsed response next question  => ", parsedBotResponse?.next_question);
+
+      // Format the content
+      const botFormattedResponse = {
+        type: botResponse?.type,
+        content: `${parsedBotResponse?.response}\n\nNext Question: ${parsedBotResponse?.next_question}`,
+        isUser: botResponse?.isUser,
+        color: "border-b border-b-gray-300",
+        bgcolor: "bg-white",
+      };
+
+      console.log("formatted bot response ", botFormattedResponse);
+
       // Add bot response to messages
-      setMessages((prev) => [...prev, botResponse]);
-      
+      setMessages((prev) => [...prev, botFormattedResponse]);
     } catch (error) {
       console.error("Error sending message:", error);
-      
+
       // Fallback error message
       const errorMessage: Message = {
         type: "text",
@@ -149,7 +169,7 @@ export function ChatContainer() {
         color: "border-b border-b-gray-300",
         bgcolor: "bg-white",
       };
-      
+
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -246,15 +266,17 @@ export function ChatContainer() {
         {/* Chat Header */}
         <ChatHeader onClick={handleShowSidePanel} />
 
-         {/* Connection Status Indicator */}
+        {/* Connection Status Indicator */}
         {!isConnected && (
-          <div style={{
-            padding: '8px',
-            textAlign: 'center',
-            backgroundColor: '#fee',
-            color: '#c00',
-            fontSize: '14px'
-          }}>
+          <div
+            style={{
+              padding: "8px",
+              textAlign: "center",
+              backgroundColor: "#fee",
+              color: "#c00",
+              fontSize: "14px",
+            }}
+          >
             ⚠️ Connecting to server...
           </div>
         )}
@@ -309,7 +331,7 @@ export function ChatContainer() {
 
         {/* Chat Input Component */}
 
-      <ChatInput
+        <ChatInput
           value={inputValue}
           onChange={setInputValue}
           onSend={handleSend}
