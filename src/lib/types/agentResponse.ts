@@ -1,5 +1,3 @@
-// types/agentResponses.ts
-
 // Base visualization types
 export interface ProgressGoal {
   label: string;
@@ -66,7 +64,17 @@ export interface PieVisualization {
   };
 }
 
-export type Visualization = ProgressVisualization | BarVisualization | PieVisualization;
+export interface TableVisualization {
+  id: string;  // e.g., "monthly_expenses_table"
+  type: "table";
+  title: string;  // e.g., "Monthly Expenses Breakdown (Average for Last 3 Months)"
+  data: {
+    columns: string[];  // e.g., ["Category", "Average Monthly Expense (PKR)", "Percentage of Total"]
+    rows: Array<string[]>;  // e.g., 0 : (3) ['Travel', 42636, '21.5%']
+  };
+}
+
+export type Visualization = ProgressVisualization | BarVisualization | PieVisualization | TableVisualization;
 
 // Agent response data structure
 export interface AgentResponseData {
@@ -96,7 +104,7 @@ export interface UserMessage extends BaseMessage {
 }
 
 export interface BotMessage extends BaseMessage {
-  type: "general" | "goal" | "budget" | "debt" | "retirement";
+  type: "general" | "goal" | "education" | "debt" | "finance";
   isUser: false;
   agentResponse: AgentResponse;
 }
@@ -130,4 +138,8 @@ export function isBarVisualization(viz: Visualization): viz is BarVisualization 
 
 export function isPieVisualization(viz: Visualization): viz is PieVisualization {
   return viz.type === "pie";
+}
+
+export function isTableVisualization(viz: Visualization): viz is TableVisualization {
+  return viz.type === "table";
 }

@@ -9,18 +9,7 @@ import { HistoryScreen } from "@/components/history/side-panel";
 import botIcon from "../../../../public/icons/bot-response-icon.svg";
 import Image from "next/image";
 import { useSocket } from "@/hooks/useSocket"; // Import the socket hook
-
-interface Message extends Bubble {
-  // type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant";
-  type: string;
-  content?: string;
-}
-
-interface Bubble {
-  isUser: boolean;
-  color: string;
-  bgcolor: string;
-}
+import { Message, UserMessage, BotMessage } from "@/lib/types/agentResponse";
 
 const suggestionsList = [
   "Show me a table of my monthly expenses.",
@@ -34,94 +23,13 @@ export function ChatContainer() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSidePanel, setShowSidePanel] = useState(false);
-  // Initialize socket connection
-  const { isConnected, sendMessage } = useSocket();
-
-  // const handleSend = () => {
-  //   if (!inputValue.trim() || isLoading) return;
-
-  //   // Add user message
-  //   const userMessage: Message = {
-  //     type: "text",
-  //     content: inputValue,
-  //     isUser: true,
-  //     color: "border-b border-b-gray-300",
-  //     bgcolor: "bg-white",
-  //   };
-
-  //   setMessages((prev) => [...prev, userMessage]);
-  //   const currentInput = inputValue;
-  //   setInputValue("");
-  //   setIsLoading(true);
-
-  //   // Simulate AI response
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-
-  //     // Determine response type based on input
-  //     let responseMessage: Message;
-  //     if (
-  //       currentInput.toLowerCase().includes("table") ||
-  //       currentInput.toLowerCase().includes("data")
-  //     ) {
-  //       responseMessage = {
-  //         type: "table",
-  //         isUser: false,
-  //         color: "border-b border-b-gray-300",
-  //         bgcolor: "bg-white",
-  //       };
-  //     } else if (
-  //       currentInput.toLowerCase().includes("line") ||
-  //       currentInput.toLowerCase().includes("trend")
-  //     ) {
-  //       responseMessage = {
-  //         type: "line-chart",
-  //         isUser: false,
-  //         color: "border-b border-b-gray-300",
-  //         bgcolor: "bg-white",
-  //       };
-  //     } else if (
-  //       currentInput.toLowerCase().includes("bar") ||
-  //       currentInput.toLowerCase().includes("compare")
-  //     ) {
-  //       responseMessage = {
-  //         type: "bar-chart",
-  //         isUser: false,
-  //         color: "border-b border-b-gray-300",
-  //         bgcolor: "bg-white",
-  //       };
-  //     } else if (
-  //       currentInput.toLowerCase().includes("merchant") ||
-  //       currentInput.toLowerCase().includes("vendor")
-  //     ) {
-  //       responseMessage = {
-  //         type: "merchant",
-  //         isUser: false,
-  //         color: "border-b border-b-gray-300",
-  //         bgcolor: "bg-white",
-  //       };
-  //     } else {
-  //       responseMessage = {
-  //         type: "text",
-  //         // content:
-  //         //   "I can help you with various data visualizations including tables, line charts, and bar charts. Just let me know what type of analysis you need!",
-  //         content:
-  //           "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet.",
-  //         isUser: false,
-  //         color: "border-b border-b-gray-300",
-  //         bgcolor: "bg-white",
-  //       };
-  //     }
-
-  //     setMessages((prev) => [...prev, responseMessage]);
-  //   }, 5000);
-  // };
+  const { isConnected, sendMessage} = useSocket(); // Use the custom hook for Socket.IO
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading || !isConnected) return;
 
     // Add user message
-    const userMessage: Message = {
+    const userMessage: UserMessage = {
       type: "text",
       content: inputValue,
       isUser: true,
@@ -136,38 +44,27 @@ export function ChatContainer() {
 
     try {
       // Send message to backend via Socket.IO
-      const botResponse = await sendMessage(currentInput);
-      const parsedBotResponse = JSON.parse(
-        botResponse?.content?.response as string
-      );
-      console.log("Bot response data :", botResponse);
-      console.log("Parsed response => ", parsedBotResponse);
-      // console.log("Parsed response => ", parsedBotResponse?.response);
-      // console.log("Parsed response next question  => ", parsedBotResponse?.next_question);
-
-      // Format the content
-      const botFormattedResponse = {
-        type: botResponse?.type,
-        content: `${parsedBotResponse?.response}\n\nNext Question: ${parsedBotResponse?.next_question}`,
-        isUser: botResponse?.isUser,
-        color: "border-b border-b-gray-300",
-        bgcolor: "bg-white",
-      };
-
-      console.log("formatted bot response ", botFormattedResponse);
+      // The botResponse is already a BotMessage with agentResponse parsed
+      const botMessage = await sendMessage(currentInput);
 
       // Add bot response to messages
-      setMessages((prev) => [...prev, botFormattedResponse]);
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
 
       // Fallback error message
-      const errorMessage: Message = {
-        type: "text",
-        content: "Sorry, I couldn't process your request. Please try again.",
+      const errorMessage: BotMessage = {
+        type: "general",
         isUser: false,
         color: "border-b border-b-gray-300",
         bgcolor: "bg-white",
+        agentResponse: {
+          response: "Sorry, I couldn't process your request. Please try again.",
+          timestamp: new Date().toISOString(),
+          data: {
+            next_question: "How else can I help you?",
+          },
+        },
       };
 
       setMessages((prev) => [...prev, errorMessage]);
@@ -228,7 +125,7 @@ export function ChatContainer() {
         currentIndex =
           currentIndex === waiting.length - 1 ? 0 : currentIndex + 1;
         setCurrentMessage(waiting[currentIndex]);
-      }, 1250);
+      }, 3500);
     }
     // Cleanup interval on unmount or when isLoading changes
     return () => {
