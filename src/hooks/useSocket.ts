@@ -1,50 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import { BotMessage, parseAgentResponse } from "@/lib/types/agentResponse";
 
 const SOCKET_URL = "http://localhost:8000";
-
-interface Message {
-  type: string;
-  content?: { response: string; agent: string; sessionId: string };
-  isUser: boolean;
-  color: string;
-  bgcolor: string;
-}
 
 export const useSocket = () => {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
-  const isInitialized = useRef(false); // Track if socket is already initialized
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    // Prevent multiple initializations
     if (isInitialized.current) {
       return;
     }
 
-    // Initialize socket connection only once
+    // Initialize socket with recovery enabled
     socketRef.current = io(SOCKET_URL, {
       path: "/socket.io",
       transports: ["websocket", "polling"],
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
-      autoConnect: true, // Auto-connect on initialization
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
+      autoConnect: true,
     });
 
     const socket = socketRef.current;
-    isInitialized.current = true; // Mark as initialized
+    isInitialized.current = true;
 
     // Connection event handlers
     socket.on("connect", () => {
-      console.log("✅ Connected to Hyku server:", socket.id);
+      console.log("✅ Connected to server:", socket.id);
       setIsConnected(true);
     });
 
     socket.on("disconnect", (reason) => {
-      console.log("❌ Disconnected from server. Reason:", reason);
+      console.log("❌ Disconnected. Reason:", reason);
       setIsConnected(false);
+      // Handle specific disconnect reasons
+      if (reason === 'io server disconnect') {
+        // Server initiated disconnect - need to manually reconnect
+        socket.connect();
+      }
     });
 
     socket.on("connect_error", (error) => {
@@ -52,16 +51,47 @@ export const useSocket = () => {
       setIsConnected(false);
     });
 
+    socket.on("reconnect_attempt", (attemptNumber) => {
+      console.log("🔄 Reconnection attempt #", attemptNumber);
+    });
+
     socket.on("reconnect", (attemptNumber) => {
-      console.log("🔄 Reconnected to server after", attemptNumber, "attempts");
+      console.log("✅ Reconnected after", attemptNumber, "attempts");
       setIsConnected(true);
     });
 
-    socket.on("ping", () => {
-      console.log("🏓 Ping received from server");
+    socket.on("reconnect_failed", () => {
+      console.error("❌ Reconnection failed after all attempts");
     });
 
-    // Cleanup on unmount (only when component unmounts completely)
+    // Session management events
+    socket.on("connected", (data) => {
+      console.log("📝 Session created:", data);
+    });
+
+    socket.on("session_recovered", (data) => {
+      console.log("🔄 Session recovered:", data);
+    });
+
+    socket.on("reconnect_success", (data) => {
+      console.log("✅ Manual reconnect success:", data);
+    });
+
+    socket.on("reconnect_failed", (data) => {
+      console.log("❌ Manual reconnect failed:", data);
+    });
+
+    // Health check
+    socket.on("pong", (data) => {
+      console.log("🏓 Pong received:", data);
+    });
+
+    // Error handling
+    socket.on("error", (error) => {
+      console.error("⚠️ Server error:", error);
+    });
+
+    // Cleanup
     return () => {
       console.log("🧹 Cleaning up socket connection");
       if (socket.connected) {
@@ -70,12 +100,9 @@ export const useSocket = () => {
       socketRef.current = null;
       isInitialized.current = false;
     };
+  }, []);
 
-  
-  }, []); // Empty dependency array ensures this runs only once
-
-  // Send message to the server
-  const sendMessage = (message: string): Promise<Message> => {
+  const sendMessage = (message: string): Promise<BotMessage> => {
     return new Promise((resolve, reject) => {
       if (!socketRef.current || !socketRef.current.connected) {
         reject(new Error("Socket not connected"));
@@ -99,66 +126,57 @@ export const useSocket = () => {
       };
 
       const handleResponse = (data: any) => {
-          console.log("📩 Received response from Hyku:", data);
+        console.log("📩 Received raw response from Hyku:", data);
 
-          // Transform backend response to your Message format
-          const botMessage: Message = {
-            type: data?.agent, // Use agent type from backend
-            content: data,
+        try {
+          // Assuming backend sends: { agent: "goal", response: "{...json...}", session_id: "..." }
+          let agentResponse;
+          
+          if (typeof data.response === "string") {
+            // Response is a JSON string, parse it
+            agentResponse = parseAgentResponse(data.response);
+          } else if (typeof data.response === "object") {
+            // Response is already an object
+            agentResponse = data.response;
+          } else {
+            // Fallback for unexpected format
+            throw new Error("Invalid response format from server");
+          }
+
+          console.log("📋 Parsed agent response:", agentResponse);
+
+          // Create the BotMessage with the parsed agent response
+          const botMessage: BotMessage = {
+            type: data?.agent || "general", // Agent type from backend (goal, budget, debt, etc.)
             isUser: false,
             color: "border-b border-b-gray-300",
             bgcolor: "bg-white",
+            agentResponse: agentResponse, // This contains response, data, timestamp
           };
 
+          console.log("✅ Final bot message:", botMessage);
+
+          // Clean up listeners
+          socket.off("processing", handleProcessing);
+          socket.off("agent_update", handleAgentUpdate);
+          socket.off("response", handleResponse);
+          socket.off("error", handleError);
+
+          clearTimeout(timeout);
           resolve(botMessage);
-          clearTimeout(timeout); // Clear timeout on response
-        };
+        } catch (error) {
+          console.error("🔴 Error parsing response:", error);
 
-      // const handleResponse = (data: any) => {
-      //   console.log("📩 Received response from Hyku:", data);
+          // Clean up listeners
+          socket.off("processing", handleProcessing);
+          socket.off("agent_update", handleAgentUpdate);
+          socket.off("response", handleResponse);
+          socket.off("error", handleError);
 
-      //   // Parse response if it's JSON string
-      //   let responseText = data.response || "";
-      //   let nextQuestion = "";
-
-      //   try {
-      //     if (typeof data.response === "string") {
-      //       const parsedResponse = JSON.parse(data.response);
-      //       responseText = parsedResponse.response || data.response;
-      //       nextQuestion = parsedResponse.next_question || "";
-      //     }
-      //   } catch (e) {
-      //     // Response is not JSON, use as-is
-      //     responseText = data.response || "";
-      //   }
-
-      //   // Format content with line breaks and bold text
-      //   const formattedContent = nextQuestion
-      //     ? `${responseText}\n\n**Next Question:** ${nextQuestion}`
-      //     : responseText;
-
-      //   // Transform backend response to Message format
-      //   const botMessage: Message = {
-      //     type: data?.agent || "general",
-      //     content: {
-      //       response: formattedContent,
-      //       agent: data?.agent || "general",
-      //       sessionId: data?.session_id || "",
-      //     },
-      //     isUser: false,
-      //     color: "border-b border-b-gray-300",
-      //     bgcolor: "bg-white",
-      //   };
-
-      //   // Clean up listeners
-      //   socket.off("processing", handleProcessing);
-      //   socket.off("agent_update", handleAgentUpdate);
-      //   socket.off("response", handleResponse);
-      //   socket.off("error", handleError);
-
-      //   clearTimeout(timeout);
-      //   resolve(botMessage);
-      // };
+          clearTimeout(timeout);
+          reject(error);
+        }
+      };
 
       const handleError = (errorData: any) => {
         console.error("🔴 Received error:", errorData);
@@ -176,7 +194,7 @@ export const useSocket = () => {
       // Add event listeners
       socket.on("processing", handleProcessing);
       socket.on("agent_update", handleAgentUpdate);
-      socket.once("response", handleResponse); // Use 'once' to auto-remove after first call
+      socket.once("response", handleResponse);
       socket.once("error", handleError);
 
       // Handle timeout
@@ -190,7 +208,7 @@ export const useSocket = () => {
         socket.off("error", handleError);
 
         reject(new Error("Response timeout - server took too long to respond"));
-      }, 60000); // 60 second timeout
+      }, 60000);
     });
   };
 

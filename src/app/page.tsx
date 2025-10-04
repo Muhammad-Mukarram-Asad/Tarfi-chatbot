@@ -1,3 +1,5 @@
+`use client`;
+
 import Registration from "../components/login/onboarding-consumer";
 
 export default function Home() {

@@ -46,8 +46,6 @@ export function ChatContainer() {
       // Send message to backend via Socket.IO
       // The botResponse is already a BotMessage with agentResponse parsed
       const botMessage = await sendMessage(currentInput);
-
-      // Add bot response to messages
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -125,7 +123,7 @@ export function ChatContainer() {
         currentIndex =
           currentIndex === waiting.length - 1 ? 0 : currentIndex + 1;
         setCurrentMessage(waiting[currentIndex]);
-      }, 3500);
+      }, 5000);
     }
     // Cleanup interval on unmount or when isLoading changes
     return () => {

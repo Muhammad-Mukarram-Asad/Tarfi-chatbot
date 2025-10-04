@@ -1,96 +1,171 @@
-import styles from "./messageBubble.module.scss"
-import Image from "next/image"
-import botIcon from "../../../../public/icons/bot-response-icon.svg"
-import { BarChartComponent, DataTable, LineChartComponent, MerchantTable } from "../chart-components"
-// Sample data for charts
-const lineChartData = [
-  { name: "1", value: 20 },
-  { name: "2", value: 45 },
-  { name: "3", value: 30 },
-  { name: "4", value: 60 },
-  { name: "5", value: 40 },
-  { name: "6", value: 80 },
-]
-
-const barChartData = [
-  { name: "Aug", value: 3000 },
-  { name: "Sept", value: 4000 },
-  { name: "Oct", value: 5000 },
-]
-
-  const sampleData = [
-    { label: "Revenue", value: "$8,200.00" , isTotal: false},
-    { label: "Expenses", value: "$3,150.00", isTotal: false },
-    { label: "Net Income", value: "$5,050.00", isTotal: false },
-    { label: "Margin", value: "61.6%", isTotal: false },
-    { label: "Total Assets", value: "$45,200.00", isTotal: true },
-  ]
-
-  const merchantData = [
-    { name: "Imtiaz", amount: "35,000.46 PKR" },
-    { name: "Yango", amount: "1200 PKR" },
-    { name: "Habitt", amount: "80,000 PKR" },
-    { name: "Interwood", amount: "45,000 PKR" },
-    { name: "Faisal", amount: "80,000 PKR" },
-    { name: "Anghethi", amount: "10,000 PKR" },
-  ]
-
-interface Message {
-  // type: "text" | "table" | "line-chart" | "bar-chart" | "loading" | "merchant"
-  type: string,
-
-  content?: string
-  isUser: boolean
-}
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import styles from "./messageBubble.module.scss";
+import Image from "next/image";
+import botIcon from "../../../../public/icons/bot-response-icon.svg";
+import {
+  BarChartComponent,
+  ComparisonBarChart,
+  DataTable,
+  PieChartComponent,
+  ProgressChart,
+} from "../chart-components";
+import {
+  Message,
+  UserMessage,
+  BotMessage,
+  isProgressVisualization,
+  isBarVisualization,
+  isPieVisualization,
+  isTableVisualization,
+  Visualization,
+} from "@/lib/types/agentResponse";
 
 interface MessageBubbleProps {
-  message: Message
+  message: Message;
 }
 
 export function MessageBubble({ message }: MessageBubbleProps) {
+  // User message
   if (message.isUser) {
     return (
       <main className={styles["user_message_main_div"]}>
         <div className={styles["user_message_content_div"]}>
-          <p>{message.content}</p>
+          <p>{(message as UserMessage).content}</p>
         </div>
       </main>
-    )
+    );
   }
+
+  // Bot message
+  const botMessage = message as BotMessage;
+  const { agentResponse } = botMessage;
 
   return (
     <main className={styles["bot_message_main_div"]}>
       <div className={styles["bot_message_container"]}>
         <Image src={botIcon} width={32} height={32} alt="bot_icon_response" />
-        {message.type === "text" || message.type === "general" &&
-          <div className={styles["bot_text_message"]} style={{ whiteSpace: 'pre-line' }}>
-             {message?.content?.split('\n\n').map((paragraph, index) => (
-    <p key={index} className={index > 0 ? 'mt-4 font-semibold' : ''}>
-      {paragraph}
-    </p>
-  ))}
-          </div>
-          }
 
-        {message.type === "table" && (
-          <DataTable data={sampleData} title="Here's your financial data breakdown:" />
-        )}
+        {/* Main Response Text */}
+        <div className={styles["bot_text_message"]}>
+          <p className="mb-4">{agentResponse.response}</p>
+        
+          {/* Visualizations */}
+          {agentResponse.data?.visualizations && 
+           agentResponse.data.visualizations.length > 0 && (
+            <div className="mt-4 space-y-2 w-full">
+              {agentResponse.data.visualizations.map((viz, index) => (
+                <VisualizationRenderer key={index} visualization={viz} />
+              ))}
+            </div>
+          )}
 
-        {message.type === "line-chart" && (
-          <LineChartComponent data={lineChartData} title="Here's your financial data breakdown:" description="Growth trend shows 15% increase over the period" />
-        )}
+          {/* Recommendations */}
+          {agentResponse.data?.recommendations && 
+           agentResponse.data.recommendations.length > 0 && (
+            <div className="mt-4">
+              <h2 className="font-semibold mb-2">Recommendations:</h2>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                {agentResponse.data.recommendations.map((rec, index) => (
+                  <li key={index} className="text-xs">{rec}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-        {message.type === "bar-chart" && (
-          <BarChartComponent data={barChartData} title="Here's your comparison chart:" description="Category C shows highest performance at 80%" />
-        )}
-
-      {
-        message.type === "merchant" && (
-          <MerchantTable data={merchantData} title="Here's your top 5 merchants:" />
-        ) 
-      }
+          {/* Next Question */}
+          {agentResponse.data?.next_question && (
+            <div className="mt-4">
+              <h1 className="font-semibold mb-2 text-grey-500 text-sm">Next Question:</h1>
+            <p className="mt-4 font-semibold text-grey-500">
+              {agentResponse.data.next_question}
+            </p>
+            </div>
+          )}
+        </div>
 
       </div>
     </main>
-  )
+  );
+}
+
+// Component to render different visualization types
+function VisualizationRenderer({ visualization }: { visualization: Visualization }) {
+  if (isProgressVisualization(visualization)) {
+    return (
+      <ProgressChart
+        data={visualization.data.goals}
+        title={visualization.title}
+      />
+    );
+  }
+
+  if (isBarVisualization(visualization)) {
+  // Check if we have multiple datasets (comparison mode)
+  if (visualization.data.datasets.length > 1) {
+    // Transform for grouped bar chart
+    const comparisonData = visualization.data.x_axis.values.map((label, index) => {
+      const dataPoint: any = { name: label };
+      
+      // Add each dataset as a separate key
+      visualization.data.datasets.forEach((dataset) => {
+        dataPoint[dataset.label] = dataset.data[index];
+      });
+      
+      return dataPoint;
+    });
+
+    return (
+      <ComparisonBarChart
+        data={comparisonData}
+        datasets={visualization.data.datasets}
+        title={visualization.title}
+        xAxisLabel={visualization.data.x_axis.label}
+        yAxisLabel={visualization.data.y_axis.label}
+      />
+    );
+  } else {
+    // Single dataset - existing code
+    const barData = visualization.data.x_axis.values.map((label, index) => ({
+      name: label,
+      value: visualization.data.datasets[0].data[index],
+    }));
+
+    return (
+      <BarChartComponent
+        data={barData}
+        dataset={visualization.data.datasets}
+        title={visualization.title}
+        xAxisLabel={visualization.data.x_axis.label}
+        yAxisLabel={visualization.data.y_axis.label}
+      />
+    );
+  }
+}
+
+  if (isPieVisualization(visualization)) {
+    // Transform pie visualization data to component format
+    const pieData = visualization.data.labels.map((label, index) => ({
+      name: label,
+      value: visualization.data.values[index],
+      color: visualization.data.colors[index],
+    }));
+
+    return (
+      <PieChartComponent
+        data={pieData}
+        title={visualization.title}
+      />
+    );
+  }
+
+  if (isTableVisualization(visualization)) {
+    const tableData = {columns: visualization.data.columns, rows: visualization.data.rows};
+    return (
+      <DataTable 
+        data={tableData} 
+        title={visualization.title} 
+      />
+    );
+  }
+  return null;
 }

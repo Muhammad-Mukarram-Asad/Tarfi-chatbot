@@ -1,9 +1,3 @@
-export interface Message {
-  id: number
-  type: "text" | "table" | "line-chart" | "bar-chart" | "loading"
-  content?: string
-  isUser: boolean
-}
 
 export interface ChartData {
   name: string
@@ -11,5 +5,6 @@ export interface ChartData {
 }
 
 export interface TableData {
-  [key: string]: string | number | boolean
+ columns: string[];
+ rows: Array<string[]>;
 }

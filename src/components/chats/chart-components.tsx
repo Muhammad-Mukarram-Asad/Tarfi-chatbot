@@ -35,6 +35,28 @@ interface MerchantDataProps {
   amount: string;
 }
 
+interface Dataset {
+  label: string;
+  data: number[];
+  color: string | string[];
+}
+
+interface BarChartComponentProps {
+  data: ChartData[];
+  dataset: Dataset[];
+  title?: string;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+  barColor?: string;
+}
+
+interface ComparisonBarChartProps {
+  data: any[];
+  datasets: Dataset[];
+  title?: string;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+}
 const formatCurrency = (value: any) => {
   if (value >= 1000) {
     return `PKR ${value / 1000}k`;
@@ -127,18 +149,13 @@ export function LineChartComponent({
   );
 }
 
-interface BarChartComponentProps {
-  data: ChartData[];
-  title?: string;
-  xAxisLabel?: string;
-  yAxisLabel?: string;
-}
-
 export function BarChartComponent({
   data,
+  dataset,
   title = "Comparison Chart",
   xAxisLabel,
   yAxisLabel,
+  barColor,
 }: BarChartComponentProps) {
   return (
     <div className="mb-3">
@@ -191,27 +208,124 @@ export function BarChartComponent({
                 fontSize: 14,
               }}
             />
-            <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={60}>
-              {data.map((entry, index) => {
-                const colors = ["#335A60", "#3C95A3", "#6ED9EA", "#14b8a6"];
-                return (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={colors[index % colors.length]}
-                  />
-                );
-              })}
+            {dataset.map((dataset, index) => (
+              <Bar
+                key={index}
+                dataKey={dataset.label}
+                fill={
+                  Array.isArray(dataset.color)
+                    ? dataset.color[0]
+                    : dataset.color
+                }
+                radius={[8, 8, 0, 0]}
+                barSize={60}
+              >
+                <LabelList
+                  dataKey={dataset.label}
+                  position="insideTop"
+                  fontSize={12}
+                  formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`} // Format the value as 'k'
+                  fill="#fff"
+                  fontWeight="bold"
+                  dy={5}
+                />
+              </Bar>
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
 
-              <LabelList
-                dataKey="value"
-                position="insideTop"
-                fontSize={14}
-                formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`} // Format the value as 'k'
-                fill="#fff" // Color of the label text
-                fontWeight="bold"
-                dy={5}
-              />
-            </Bar>
+export function ComparisonBarChart({
+  data,
+  datasets,
+  title = "Comparison Chart",
+  xAxisLabel,
+  yAxisLabel,
+}: ComparisonBarChartProps) {
+  return (
+    <div className="mb-3">
+      <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
+        {title}
+      </p>
+      <div className="bg-white rounded-lg h-72 mb-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            style={{ pointerEvents: "none" }}
+            // barGap={10}
+            // barCategoryGap="10%"
+          >
+            <CartesianGrid
+              vertical={false}
+              horizontal={true}
+              strokeDasharray="0"
+              stroke="#e5e5e5"
+            />
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10 }}
+              label={{
+                value: xAxisLabel,
+                position: "insideBottom",
+                offset: -5,
+                fontSize: 14,
+                marginTop: "10px",
+              }}
+            />
+            <YAxis
+              tick={{
+                fontSize: 14,
+                textAnchor: "end",
+                fill: "black",
+              }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={formatCurrency}
+              tickCount={6}
+              width={"auto"}
+              // label={{
+              //   value: yAxisLabel,
+              //   angle: -90,
+              //   position: "left",
+              //   offset: 10,
+              //   fontSize: 14,
+              // }}
+            />
+            <Legend
+              wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+              iconType="rect"
+              iconSize={12}
+            />
+
+            {/* Render a Bar for each dataset */}
+            {datasets.map((dataset, index) => (
+              <Bar
+                key={index}
+                dataKey={dataset.label}
+                fill={
+                  Array.isArray(dataset.color)
+                    ? dataset.color[0]
+                    : dataset.color
+                }
+                radius={[8, 8, 0, 0]}
+                barSize={60}
+              >
+                <LabelList
+                  dataKey={dataset.label}
+                  position="insideTop"
+                  fontSize={12}
+                  formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`} // Format the value as 'k'
+                  fill="#fff"
+                  fontWeight="bold"
+                  dy={5}
+                />
+              </Bar>
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
