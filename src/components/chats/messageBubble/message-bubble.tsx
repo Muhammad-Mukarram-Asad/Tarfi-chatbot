@@ -59,23 +59,36 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             </div>
           )}
 
-          {/* Recommendations */}
-          {agentResponse.data?.recommendations && 
+         {agentResponse.data?.recommendations && 
            agentResponse.data.recommendations.length > 0 && (
             <div className="mt-4">
               <h2 className="font-semibold mb-2">Recommendations:</h2>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                {agentResponse.data.recommendations.map((rec, index) => (
-                  <li key={index} className="text-xs">{rec}</li>
-                ))}
-              </ul>
+              <ol className="list-decimal list-inside space-y-3 ml-2">
+                {agentResponse.data.recommendations.map((rec, index) => {
+                  // Split the recommendation into heading and description
+                  const match = rec.match(/^\d+\.\s\*\*(.*?)\*\*:\s(.+)$/);
+                  
+                  if (match) {
+                    const [, heading, description] = match;
+                    return (
+                      <li key={index} className="text-xs">
+                        <span className="font-bold">{heading}</span>
+                        <div className="mt-1 ml-5">{description}</div>
+                      </li>
+                    );
+                  }
+                  
+                  // Fallback if format doesn't match
+                  return <li key={index} className="text-xs">{rec}</li>;
+                })}
+              </ol>
             </div>
           )}
 
           {/* Next Question */}
           {agentResponse.data?.next_question && (
             <div className="mt-4">
-              <h1 className="font-semibold mb-2 text-grey-500 text-sm">Next Question:</h1>
+              {/* <h1 className="font-semibold mb-2 text-grey-500 text-sm">Next Question:</h1> */}
             <p className="mt-4 font-semibold text-grey-500">
               {agentResponse.data.next_question}
             </p>
@@ -101,6 +114,8 @@ function VisualizationRenderer({ visualization }: { visualization: Visualization
 
   if (isBarVisualization(visualization)) {
   // Check if we have multiple datasets (comparison mode)
+
+  console.log("Bar Visualization Data:", visualization.data, "length of datasets:", visualization.data.datasets.length);
   if (visualization.data.datasets.length > 1) {
     // Transform for grouped bar chart
     const comparisonData = visualization.data.x_axis.values.map((label, index) => {
@@ -125,10 +140,13 @@ function VisualizationRenderer({ visualization }: { visualization: Visualization
     );
   } else {
     // Single dataset - existing code
+    console.log("Single Dataset Bar Chart Data:", visualization.data);
     const barData = visualization.data.x_axis.values.map((label, index) => ({
       name: label,
       value: visualization.data.datasets[0].data[index],
     }));
+
+    console.log("Transformed Bar Chart Data:", barData);
 
     return (
       <BarChartComponent

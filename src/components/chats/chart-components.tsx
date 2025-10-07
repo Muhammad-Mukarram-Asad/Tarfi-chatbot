@@ -149,26 +149,117 @@ export function LineChartComponent({
   );
 }
 
+// export function BarChartComponent({
+//   data,
+//   dataset,
+//   title = "Comparison Chart",
+//   xAxisLabel,
+//   yAxisLabel,
+// }: BarChartComponentProps) {
+//   return (
+//     <div className="mb-3">
+//       <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
+//         {title}
+//       </p>
+//       <div className="bg-white rounded-lg mb-0" style={{ height: "360px" }}>
+//         <ResponsiveContainer width="100%" height="100%">
+//           <BarChart
+//             data={data}
+//             style={{ pointerEvents: "none" }}
+//             barGap={10}
+//             barCategoryGap={10}
+//           >
+//             <CartesianGrid
+//               vertical={false}
+//               horizontal={true}
+//               strokeDasharray="0"
+//               stroke="#e5e5e5"
+//             />
+//             <XAxis
+//               dataKey="name"
+//               axisLine={false}
+//               tickLine={false}
+//               tick={{ fontSize: 10, textAnchor: "middle", fill: "black" }}
+//               tickMargin={5}
+//               width={50}
+//               label={{
+//                 value: xAxisLabel,
+//                 position: "insideBottom",
+//                 offset: -5,
+//                 fontSize: 12,
+//               }}
+//             />
+//             <YAxis
+//               tick={{
+//                 fontSize: 10,
+//                 textAnchor: "end",
+//                 fill: "black",
+//                 dx: 2, // Add gap between ticks and tick labels
+//               }}
+//               tickLine={false}
+//               axisLine={false}
+//               tickFormatter={formatCurrency}
+//               tickCount={6}
+//               width={60} // Fixed width instead of "auto" for better control
+//               label={{
+//                 value: yAxisLabel,
+//                 angle: -90,
+//                 position: "insideLeft",
+//                 offset: -1, // Increase offset to create gap from tick labels
+//                 fontSize: 12,
+//                 style: { textAnchor: "middle" },
+//               }}
+//             />
+//             {/* {data.map((entry, index) => ( */}
+//               <Bar
+//                 // key={index}
+//                 dataKey="value"
+//                 fill={
+//                   Array.isArray(dataset[0]?.color)
+//                     ? dataset[0].color[0]
+//                     : dataset[0]?.color || "red"
+//                 }
+//                 radius={[8, 8, 0, 0]}
+//                 barSize={60}
+//               >
+//                 <LabelList
+//                   dataKey="value"
+//                   position="insideTop"
+//                   fontSize={12}
+//                   formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`}
+//                   fill="#fff"
+//                   fontWeight="bold"
+//                   dy={5}
+//                 />
+//               </Bar>
+//             {/* ))} */}
+//           </BarChart>
+//         </ResponsiveContainer>
+//       </div>
+//     </div>
+//   );
+// }
+
 export function BarChartComponent({
   data,
   dataset,
   title = "Comparison Chart",
   xAxisLabel,
   yAxisLabel,
-  barColor,
 }: BarChartComponentProps) {
   return (
     <div className="mb-3">
       <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
         {title}
       </p>
-      <div className="bg-white rounded-lg h-60 mb-0">
+      <div className="bg-white rounded-lg mb-0" style={{ height: "400px" }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
             style={{ pointerEvents: "none" }}
             barGap={10}
             barCategoryGap={10}
+            margin={{ top: 20, right: 0, bottom: 60, left:0 }}
           >
             <CartesianGrid
               vertical={false}
@@ -180,57 +271,65 @@ export function BarChartComponent({
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 10, dx: 5, dy: 5, fill: "black", width: 50}}
+              height={60}
+              interval={0}
+              angle={0}
+              textAnchor="start"
               label={{
                 value: xAxisLabel,
                 position: "insideBottom",
-                offset: -5,
+                offset: 5,
                 fontSize: 14,
+                
               }}
             />
             <YAxis
               tick={{
-                fontSize: 14,
+                fontSize: 10,
                 textAnchor: "end",
                 fill: "black",
-                transform: "rotate(0)", // Ensures horizontal text
+                dx: -5,
               }}
               tickLine={false}
               axisLine={false}
               tickFormatter={formatCurrency}
               tickCount={6}
-              width="auto"
+              width={80}
               label={{
                 value: yAxisLabel,
                 angle: -90,
-                position: "left",
-                offset: 0,
-                fontSize: 14,
+                position: "insideLeft",
+                offset: 10,
+                fontSize: 10,
+                style: { textAnchor: 'middle' }
               }}
             />
-            {dataset.map((dataset, index) => (
-              <Bar
-                key={index}
-                dataKey={dataset.label}
-                fill={
-                  Array.isArray(dataset.color)
-                    ? dataset.color[0]
-                    : dataset.color
-                }
-                radius={[8, 8, 0, 0]}
-                barSize={60}
-              >
-                <LabelList
-                  dataKey={dataset.label}
-                  position="insideTop"
-                  fontSize={12}
-                  formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`} // Format the value as 'k'
-                  fill="#fff"
-                  fontWeight="bold"
-                  dy={5}
-                />
-              </Bar>
-            ))}
+            <Bar
+              dataKey="value"
+              fill={
+                Array.isArray(dataset[0]?.color)
+                  ? dataset[0].color[0]
+                  : dataset[0]?.color || "#5fc9c5"
+              }
+              radius={[8, 8, 0, 0]}
+              barSize={60}
+            >
+              <LabelList
+                dataKey="value"
+                position="insideTop"
+                fontSize={12}
+                formatter={(value: any) => {
+                  if (value === 0) return '0';
+                  if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
+                  return value.toFixed(0);
+
+                }}
+                fill="#fff"
+                fontWeight="bold"
+                dy={5}
+              />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
