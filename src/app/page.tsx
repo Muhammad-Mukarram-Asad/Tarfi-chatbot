@@ -1,4 +1,4 @@
-`use client`;
+"use client";
 
 import Registration from "../components/login/onboarding-consumer";
 
