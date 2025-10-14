@@ -51,6 +51,10 @@ export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
           onChange={(e) => handleSearch(e)}
         />
       </div>
+            <div className={styles["new_chat_button_div"]} onClick={handleNewChat}>
+        <p>New Chat</p>
+        <Image src={newChatIcon} alt="plus_icon" width={24} height={24} />
+      </div>
       <section className={styles["history_list_section"]}>
         <h1>Recent Chats</h1>
         {filteredList.length > 0
@@ -71,10 +75,7 @@ export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
         <p>View more</p>
       </section>
 
-      <div className={styles["new_chat_button_div"]} onClick={handleNewChat}>
-        <p>New Chat</p>
-        <Image src={newChatIcon} alt="plus_icon" width={24} height={24} />
-      </div>
+
     </main>
   );
 };

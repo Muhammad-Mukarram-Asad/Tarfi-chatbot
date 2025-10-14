@@ -249,6 +249,7 @@ export function BarChartComponent({
 }: BarChartComponentProps) {
   return (
     <div className="mb-3">
+      <div className="overflow-x-auto">
       <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
         {title}
       </p>
@@ -259,7 +260,7 @@ export function BarChartComponent({
             style={{ pointerEvents: "none" }}
             barGap={10}
             barCategoryGap={10}
-            margin={{ top: 20, right: 0, bottom: 60, left:0 }}
+            // margin={{ top: 20, right: 0, bottom: 60, left:0 }}
           >
             <CartesianGrid
               vertical={false}
@@ -279,7 +280,7 @@ export function BarChartComponent({
               label={{
                 value: xAxisLabel,
                 position: "insideBottom",
-                offset: 5,
+                offset: 0,
                 fontSize: 14,
                 
               }}
@@ -296,14 +297,14 @@ export function BarChartComponent({
               tickFormatter={formatCurrency}
               tickCount={6}
               width={80}
-              label={{
-                value: yAxisLabel,
-                angle: -90,
-                position: "insideLeft",
-                offset: 10,
-                fontSize: 10,
-                style: { textAnchor: 'middle' }
-              }}
+              // label={{
+              //   value: yAxisLabel,
+              //   angle: -90,
+              //   position: "insideLeft",
+              //   offset: 10,
+              //   fontSize: 10,
+              //   style: { textAnchor: 'middle' }
+              // }}
             />
             <Bar
               dataKey="value"
@@ -313,7 +314,7 @@ export function BarChartComponent({
                   : dataset[0]?.color || "#5fc9c5"
               }
               radius={[8, 8, 0, 0]}
-              barSize={60}
+              barSize={50}
             >
               <LabelList
                 dataKey="value"
@@ -333,9 +334,129 @@ export function BarChartComponent({
           </BarChart>
         </ResponsiveContainer>
       </div>
+      </div>
     </div>
   );
 }
+
+// export function ComparisonBarChart({
+//   data,
+//   datasets,
+//   title = "Comparison Chart",
+//   xAxisLabel,
+//   yAxisLabel,
+// }: ComparisonBarChartProps) {
+//   // Calculate dynamic width based on number of categories
+//   // Each category gets 150px width to ensure proper spacing and visibility
+//   const chartWidth = Math.max(600, data.length * 150);
+
+//   return (
+//     <section style={{ width: "100%" }}>
+//       <div className="mb-3">
+//         <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
+//           {title}
+//         </p>
+//         {/* Flex container to keep Y-axis fixed */}
+//         <div className="bg-white rounded-lg h-72 mb-0 flex">
+//           {/* Fixed Y-axis container */}
+//           <div style={{ width: "80px", flexShrink: 0 }}>
+//             <ResponsiveContainer width="100%" height="100%">
+//               <BarChart
+//                 data={data}
+//                 style={{ pointerEvents: "none" }}
+//                 margin={{ left: 10, right: 0, top: 5, bottom: 20 }}
+//               >
+//                 <YAxis
+//                   tick={{
+//                     fontSize: 12,
+//                     textAnchor: "end",
+//                     fill: "black",
+//                   }}
+//                   tickLine={false}
+//                   axisLine={false}
+//                   tickFormatter={formatCurrency}
+//                   tickCount={6}
+//                   width={60}
+//                 />
+//               </BarChart>
+//             </ResponsiveContainer>
+//           </div>
+
+//           {/* Scrollable chart container */}
+//           <div className="overflow-x-auto flex-1">
+//             <div style={{ width: `${chartWidth}px`, height: "100%" }}>
+//               <ResponsiveContainer width="100%" height="100%">
+//                 <BarChart
+//                   data={data}
+//                   style={{ pointerEvents: "none" }}
+//                   margin={{ left: 0, right: 20, top: 5, bottom: 20 }}
+//                 >
+//                   <CartesianGrid
+//                     vertical={false}
+//                     horizontal={true}
+//                     strokeDasharray="0"
+//                     stroke="#e5e5e5"
+//                   />
+//                   <XAxis
+//                     dataKey="name"
+//                     axisLine={false}
+//                     tickLine={false}
+//                     tick={{ fontSize: 11 }}
+//                     interval={0}
+//                     label={{
+//                       value: xAxisLabel,
+//                       position: "insideBottom",
+//                       offset: -5,
+//                       fontSize: 14,
+//                     }}
+//                   />
+//                   {/* Hidden Y-axis to maintain proper spacing */}
+//                   <YAxis
+//                     tick={false}
+//                     tickLine={false}
+//                     axisLine={false}
+//                     width={0}
+//                     tickFormatter={formatCurrency}
+//                     tickCount={6}
+//                   />
+//                   <Legend
+//                     wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+//                     iconType="rect"
+//                     iconSize={12}
+//                   />
+
+//                   {datasets.map((dataset, index) => (
+//                     <Bar
+//                       key={index}
+//                       dataKey={dataset.label}
+//                       fill={
+//                         Array.isArray(dataset.color)
+//                           ? dataset.color[0]
+//                           : dataset.color
+//                       }
+//                       radius={[8, 8, 0, 0]}
+//                       barSize={40}
+//                     >
+//                       <LabelList
+//                         dataKey={dataset.label}
+//                         position="insideTop"
+//                         fontSize={11}
+//                         formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`}
+//                         fill="#fff"
+//                         fontWeight="bold"
+//                         dy={8}
+//                       />
+//                     </Bar>
+//                   ))}
+//                 </BarChart>
+//               </ResponsiveContainer>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
 
 export function ComparisonBarChart({
   data,
@@ -344,91 +465,134 @@ export function ComparisonBarChart({
   xAxisLabel,
   yAxisLabel,
 }: ComparisonBarChartProps) {
-  return (
-    <div className="mb-3">
-      <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
-        {title}
-      </p>
-      <div className="bg-white rounded-lg h-72 mb-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            style={{ pointerEvents: "none" }}
-            // barGap={10}
-            // barCategoryGap="10%"
-          >
-            <CartesianGrid
-              vertical={false}
-              horizontal={true}
-              strokeDasharray="0"
-              stroke="#e5e5e5"
-            />
-            <XAxis
-              dataKey="name"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 10 }}
-              label={{
-                value: xAxisLabel,
-                position: "insideBottom",
-                offset: -5,
-                fontSize: 14,
-                marginTop: "10px",
-              }}
-            />
-            <YAxis
-              tick={{
-                fontSize: 14,
-                textAnchor: "end",
-                fill: "black",
-              }}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={formatCurrency}
-              tickCount={6}
-              width={"auto"}
-              // label={{
-              //   value: yAxisLabel,
-              //   angle: -90,
-              //   position: "left",
-              //   offset: 10,
-              //   fontSize: 14,
-              // }}
-            />
-            <Legend
-              wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
-              iconType="rect"
-              iconSize={12}
-            />
+  // Calculate dynamic width based on number of categories
+  // Each category gets 150px width to ensure proper spacing and visibility
+  const chartWidth = Math.max(600, data.length * 150);
 
-            {/* Render a Bar for each dataset */}
-            {datasets.map((dataset, index) => (
-              <Bar
-                key={index}
-                dataKey={dataset.label}
-                fill={
-                  Array.isArray(dataset.color)
-                    ? dataset.color[0]
-                    : dataset.color
-                }
-                radius={[8, 8, 0, 0]}
-                barSize={60}
+  return (
+    <section style={{ width: "100%" }}>
+      <div className="mb-3">
+        <p className="mb-4 text-center" style={{ fontSize: "14px" }}>
+          {title}
+        </p>
+        {/* Flex container to keep Y-axis fixed */}
+        <div className="bg-white rounded-lg h-72 mb-0 flex">
+          {/* Fixed Y-axis container */}
+          <div style={{ width: "60px", flexShrink: 0 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data}
+                style={{ pointerEvents: "none" }}
+                margin={{ left: 10, right: 0, top: 5, bottom: 20 }}
               >
-                <LabelList
-                  dataKey={dataset.label}
-                  position="insideTop"
-                  fontSize={12}
-                  formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`} // Format the value as 'k'
-                  fill="#fff"
-                  fontWeight="bold"
-                  dy={5}
+                {/* CartesianGrid for horizontal lines */}
+                <CartesianGrid
+                  vertical={false}
+                  horizontal={true}
+                  strokeDasharray="0"
+                  stroke="#e5e5e5"
                 />
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+                <YAxis
+                  tick={{
+                    fontSize: 10,
+                    textAnchor: "end",
+                    fill: "black",
+                    dx: -5,
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={formatCurrency}
+                  tickCount={6}
+                  width={60}
+                  // domain={[0, 'auto']} // Set domain to auto-calculate from data
+                />
+                {/* Add invisible bars to establish the Y-axis scale */}
+                {datasets.map((dataset, index) => (
+                  <Bar
+                    key={index}
+                    dataKey={dataset.label}
+                    fill="transparent"
+                    barSize={0}
+                  />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Scrollable chart container */}
+          <div className="overflow-x-auto flex-1">
+            <div style={{ width: `${chartWidth}px`, height: "100%" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={data}
+                  style={{ pointerEvents: "none" }}
+                  margin={{ left: 0, right: 20, top: 5, bottom: 20 }}
+                >
+                  {/* CartesianGrid for horizontal lines in scrollable area */}
+                  <CartesianGrid
+                    vertical={false}
+                    horizontal={true}
+                    strokeDasharray="0"
+                    stroke="#e5e5e5"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 11 }}
+                    interval={0}
+                    label={{
+                      value: xAxisLabel,
+                      position: "insideBottom",
+                      offset: -5,
+                      fontSize: 14,
+                    }}
+                  />
+                  {/* Hidden Y-axis to maintain proper spacing and alignment */}
+                  <YAxis
+                    tick={false}
+                    tickLine={false}
+                    axisLine={false}
+                    width={0}
+                    tickFormatter={formatCurrency}
+                    tickCount={6}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+                    iconType="rect"
+                    iconSize={12}
+                  />
+
+                  {datasets.map((dataset, index) => (
+                    <Bar
+                      key={index}
+                      dataKey={dataset.label}
+                      fill={
+                        Array.isArray(dataset.color)
+                          ? dataset.color[0]
+                          : dataset.color
+                      }
+                      radius={[8, 8, 0, 0]}
+                      barSize={40}
+                    >
+                      <LabelList
+                        dataKey={dataset.label}
+                        position="insideTop"
+                        fontSize={11}
+                        formatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`}
+                        fill="#fff"
+                        fontWeight="bold"
+                        dy={8}
+                      />
+                    </Bar>
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -440,35 +604,43 @@ export function DataTable({
     <main className={styles["table_main_div"]}>
       <p>{title}</p>
 
-      {/* Wrapper div for horizontal scrolling */}
-      <div className="overflow-x-auto">
-        <table className="table-auto border border-black border-collapse min-w-full">
-          <thead className="bg-gray-100">
-            <tr className="border-b-2 border-black">
-              {data.columns.map((col, index) => {
-                return (
-                  <th key={index} className="px-4 py-2 text-left text-xs">
-                    {col}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {data?.rows?.map((outerRow, index) => {
-              return (
-                <tr key={index} className="border-b border-black">
-                  {outerRow.map((col, index) => (
-                    <td key={index} className="px-4 py-2 text-left text-sm">
-                      {col}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+    {/* Wrapper div for horizontal scrolling */}
+<div className="overflow-x-auto">
+  <table className="table-auto border border-black border-collapse min-w-full">
+    <thead className="bg-gray-100">
+      <tr className="border-b-2 border-black">
+        {data.columns.map((col, index) => {
+          return (
+            <th 
+              key={index} 
+              className={`px-4 py-2 text-center ${index === 0 ? 'sticky left-0 z-20 bg-gray-100' : ''}`}
+              style={{fontSize: "14px"}}
+            >
+              {col}
+            </th>
+          );
+        })}
+      </tr>
+    </thead>
+    <tbody>
+      {data?.rows?.map((outerRow, rowIndex) => {
+        return (
+          <tr key={rowIndex} className="border-b border-black">
+            {outerRow.map((col, colIndex) => (
+              <td 
+                key={colIndex} 
+                className={`px-4 py-2 text-center ${colIndex === 0 ? 'sticky left-0 z-20 bg-white' : ''}`}
+                style={{fontSize: "14px"}}
+              >
+                {col}
+              </td>
+            ))}
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
     </main>
   );
 }
@@ -508,8 +680,8 @@ export function ProgressChart({ data, title }: ProgressChartProps) {
         {data.map((goal, index) => (
           <div key={index} className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="font-medium text-sm">{goal.label}</span>
-              <span className="text-sm text-gray-600">
+              <span className="font-medium" style={{fontSize: "14px"}}>{goal.label}</span>
+              <span className=" text-gray-600" style={{fontSize: "14px"}}>
                 {goal.percentage.toFixed(2)}%
               </span>
             </div>
@@ -522,7 +694,7 @@ export function ProgressChart({ data, title }: ProgressChartProps) {
                 }}
               />
             </div>
-            <div className="flex justify-between text-xs text-gray-500">
+            <div className="flex justify-between text-gray-500" style={{fontSize: "14px"}}>
               <span>Current: PKR {goal.current.toLocaleString()}</span>
               <span>Target: PKR {goal.target.toLocaleString()}</span>
             </div>
@@ -613,9 +785,9 @@ export function PieChartComponent({ data, title }: PieChartComponentProps) {
                     className="w-4 h-4 rounded"
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-sm">{item.name}</span>
+                  <span style={{fontSize: "14px"}}>{item.name}</span>
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className=" text-gray-600" style={{fontSize: "14px"}}>
                   <span className="font-medium">
                     PKR {item.value.toLocaleString()}
                   </span>

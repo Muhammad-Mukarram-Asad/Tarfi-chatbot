@@ -25,17 +25,15 @@
 .chat_input_textarea {
   outline: none;
   resize: none;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden;
   max-height: 144px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 20px;
-  letter-spacing: 0%;
   width: 85%;
   text-align: left;
   border: none;
-  padding: 14px 12px;
+  padding: 16px 12px;
   background: transparent;
   scroll-behavior: smooth;
   scrollbar-width: none;

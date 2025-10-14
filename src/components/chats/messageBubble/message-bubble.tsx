@@ -47,7 +47,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
         {/* Main Response Text */}
         <div className={styles["bot_text_message"]}>
-          <p className="mb-4">{agentResponse.response}</p>
+          <p className="mb-4" style={{ fontSize: "14px" }}>{agentResponse.response}</p>
         
           {/* Visualizations */}
           {agentResponse.data?.visualizations && 
@@ -71,7 +71,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   if (match) {
                     const [, heading, description] = match;
                     return (
-                      <li key={index} className="text-xs">
+                      <li key={index} style={{fontSize: "14px"}}>
                         <span className="font-bold">{heading}</span>
                         <div className="mt-1 ml-5">{description}</div>
                       </li>
@@ -79,7 +79,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   }
                   
                   // Fallback if format doesn't match
-                  return <li key={index} className="text-xs">{rec}</li>;
+                  return <li key={index} style={{fontSize: "14px"}}>{rec}</li>;
                 })}
               </ol>
             </div>
@@ -114,8 +114,6 @@ function VisualizationRenderer({ visualization }: { visualization: Visualization
 
   if (isBarVisualization(visualization)) {
   // Check if we have multiple datasets (comparison mode)
-
-  console.log("Bar Visualization Data:", visualization.data, "length of datasets:", visualization.data.datasets.length);
   if (visualization.data.datasets.length > 1) {
     // Transform for grouped bar chart
     const comparisonData = visualization.data.x_axis.values.map((label, index) => {

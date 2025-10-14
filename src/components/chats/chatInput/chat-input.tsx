@@ -175,11 +175,11 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           placeholder="ask me anything..."
           className={`${styles["chat_input_textarea"]} ${showScrollbar ? styles["show_scrollbar"] : ""}`}
           onKeyUp={handleKeyPress}
-          // maxLength={300}
           disabled={disabled}
           aria-label="Chat message input"
           aria-describedby="char-count"
           id="chat-input"
+          // maxLength={300}
         />
         <div className={styles["chat_input_button_div"]}>
           <button onClick={handleSend} disabled={disabled || !value.trim()} aria-label="Send message">

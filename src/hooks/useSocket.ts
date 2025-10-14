@@ -6,101 +6,109 @@ import { BotMessage, parseAgentResponse } from "@/lib/types/agentResponse";
 const SOCKET_URL = "http://localhost:8000";
 
 export const useSocket = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef<Socket | null>(null);
-  const isInitialized = useRef(false);
+const [isConnected, setIsConnected] = useState(false);
+const socketRef = useRef<Socket | null>(null);
 
-  useEffect(() => {
-    if (isInitialized.current) {
-      return;
+useEffect(() => {
+  // If socket already exists and is connected, don't create a new one
+  if (socketRef.current?.connected) {
+    console.log("Socket already connected, reusing existing connection");
+    return;
+  }
+
+  // If socket exists but is disconnected, clean it up first
+  if (socketRef.current) {
+    console.log("Cleaning up disconnected socket before creating new one");
+    socketRef.current.removeAllListeners();
+    socketRef.current.disconnect();
+    socketRef.current = null;
+  }
+
+  // Initialize socket with recovery enabled
+  socketRef.current = io(SOCKET_URL, {
+    path: "/socket.io",
+    transports: ["websocket", "polling"],
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000,
+    autoConnect: true,
+  });
+
+  const socket = socketRef.current;
+
+  // Connection event handlers
+  socket.on("connect", () => {
+    console.log("✅ Connected to server:", socket.id);
+    setIsConnected(true);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log("❌ Disconnected. Reason:", reason);
+    setIsConnected(false);
+    // Handle specific disconnect reasons
+    if (reason === 'io server disconnect') {
+      // Server initiated disconnect - need to manually reconnect
+      socket.connect();
     }
+  });
 
-    // Initialize socket with recovery enabled
-    socketRef.current = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      timeout: 20000,
-      autoConnect: true,
-    });
+  socket.on("connect_error", (error) => {
+    console.error("🔴 Connection error:", error.message);
+    setIsConnected(false);
+  });
 
-    const socket = socketRef.current;
-    isInitialized.current = true;
+  socket.on("reconnect_attempt", (attemptNumber) => {
+    console.log("🔄 Reconnection attempt #", attemptNumber);
+  });
 
-    // Connection event handlers
-    socket.on("connect", () => {
-      console.log("✅ Connected to server:", socket.id);
-      setIsConnected(true);
-    });
+  socket.on("reconnect", (attemptNumber) => {
+    console.log("✅ Reconnected after", attemptNumber, "attempts");
+    setIsConnected(true);
+  });
 
-    socket.on("disconnect", (reason) => {
-      console.log("❌ Disconnected. Reason:", reason);
-      setIsConnected(false);
-      // Handle specific disconnect reasons
-      if (reason === 'io server disconnect') {
-        // Server initiated disconnect - need to manually reconnect
-        socket.connect();
-      }
-    });
+  socket.on("reconnect_failed", () => {
+    console.error("❌ Reconnection failed after all attempts");
+  });
 
-    socket.on("connect_error", (error) => {
-      console.error("🔴 Connection error:", error.message);
-      setIsConnected(false);
-    });
+  // Session management events
+  socket.on("connected", (data) => {
+    console.log("📝 Session created:", data);
+  });
 
-    socket.on("reconnect_attempt", (attemptNumber) => {
-      console.log("🔄 Reconnection attempt #", attemptNumber);
-    });
+  socket.on("session_recovered", (data) => {
+    console.log("🔄 Session recovered:", data);
+  });
 
-    socket.on("reconnect", (attemptNumber) => {
-      console.log("✅ Reconnected after", attemptNumber, "attempts");
-      setIsConnected(true);
-    });
+  socket.on("reconnect_success", (data) => {
+    console.log("✅ Manual reconnect success:", data);
+  });
 
-    socket.on("reconnect_failed", () => {
-      console.error("❌ Reconnection failed after all attempts");
-    });
+  socket.on("reconnect_failed", (data) => {
+    console.log("❌ Manual reconnect failed:", data);
+  });
 
-    // Session management events
-    socket.on("connected", (data) => {
-      console.log("📝 Session created:", data);
-    });
+  // Health check
+  socket.on("pong", (data) => {
+    console.log("🏓 Pong received:", data);
+  });
 
-    socket.on("session_recovered", (data) => {
-      console.log("🔄 Session recovered:", data);
-    });
+  // Error handling
+  socket.on("error", (error) => {
+    console.error("⚠️ Server error:", error);
+  });
 
-    socket.on("reconnect_success", (data) => {
-      console.log("✅ Manual reconnect success:", data);
-    });
-
-    socket.on("reconnect_failed", (data) => {
-      console.log("❌ Manual reconnect failed:", data);
-    });
-
-    // Health check
-    socket.on("pong", (data) => {
-      console.log("🏓 Pong received:", data);
-    });
-
-    // Error handling
-    socket.on("error", (error) => {
-      console.error("⚠️ Server error:", error);
-    });
-
-    // Cleanup
-    return () => {
-      console.log("🧹 Cleaning up socket connection");
-      if (socket.connected) {
-        socket.disconnect();
-      }
-      socketRef.current = null;
-      isInitialized.current = false;
-    };
-  }, []);
+  // Cleanup
+  return () => {
+    console.log("🧹 Cleaning up socket connection");
+    if (socketRef.current) {
+      socketRef.current.removeAllListeners();
+      socketRef.current.disconnect();
+      // Don't set socketRef.current to null here - let it persist
+    }
+  };
+}, []);
 
   const sendMessage = (message: string): Promise<BotMessage> => {
     return new Promise((resolve, reject) => {
