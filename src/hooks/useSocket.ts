@@ -81,14 +81,6 @@ useEffect(() => {
     console.log("🔄 Session recovered:", data);
   });
 
-  socket.on("reconnect_success", (data) => {
-    console.log("✅ Manual reconnect success:", data);
-  });
-
-  socket.on("reconnect_failed", (data) => {
-    console.log("❌ Manual reconnect failed:", data);
-  });
-
   // Health check
   socket.on("pong", (data) => {
     console.log("🏓 Pong received:", data);
@@ -97,6 +89,11 @@ useEffect(() => {
   // Error handling
   socket.on("error", (error) => {
     console.error("⚠️ Server error:", error);
+  });
+
+  // get stream adapter info
+  socket.on("get_stream_adapter", (data) => {
+    console.log("ℹ️ Stream adapter info:", data);
   });
 
   // Cleanup
@@ -151,8 +148,6 @@ useEffect(() => {
             throw new Error("Invalid response format from server");
           }
 
-          console.log("📋 Parsed agent response:", agentResponse);
-
           // Create the BotMessage with the parsed agent response
           const botMessage: BotMessage = {
             type: data?.agent || "general", // Agent type from backend (goal, budget, debt, etc.)
@@ -169,6 +164,9 @@ useEffect(() => {
           socket.off("agent_update", handleAgentUpdate);
           socket.off("response", handleResponse);
           socket.off("error", handleError);
+         socket.off("get_stream_adapter", (data) => {
+        console.log("ℹ️ Stream adapter info:", data);
+      });
 
           clearTimeout(timeout);
           resolve(botMessage);
@@ -180,6 +178,9 @@ useEffect(() => {
           socket.off("agent_update", handleAgentUpdate);
           socket.off("response", handleResponse);
           socket.off("error", handleError);
+          socket.off("get_stream_adapter", (data) => {
+        console.log("ℹ️ Stream adapter info:", data);
+      });
 
           clearTimeout(timeout);
           reject(error);
@@ -194,6 +195,9 @@ useEffect(() => {
         socket.off("agent_update", handleAgentUpdate);
         socket.off("response", handleResponse);
         socket.off("error", handleError);
+        socket.off("get_stream_adapter", (data) => {
+        console.log("ℹ️ Stream adapter info:", data);
+      });
 
         clearTimeout(timeout);
         reject(new Error(errorData.message || errorData.error || "Unknown error"));
@@ -204,6 +208,9 @@ useEffect(() => {
       socket.on("agent_update", handleAgentUpdate);
       socket.once("response", handleResponse);
       socket.once("error", handleError);
+      socket.on("get_stream_adapter", (data) => {
+        console.log("ℹ️ Stream adapter info:", data);
+      });
 
       // Handle timeout
       const timeout = setTimeout(() => {
@@ -214,6 +221,9 @@ useEffect(() => {
         socket.off("agent_update", handleAgentUpdate);
         socket.off("response", handleResponse);
         socket.off("error", handleError);
+        socket.off("get_stream_adapter", (data) => {
+        console.log("ℹ️ Stream adapter info:", data);
+      });
 
         reject(new Error("Response timeout - server took too long to respond"));
       }, 60000);

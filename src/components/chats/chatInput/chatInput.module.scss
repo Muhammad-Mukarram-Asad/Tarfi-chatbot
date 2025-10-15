@@ -12,14 +12,9 @@
   transform: translateX(-50%);
   place-content: center;
   transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.chat_input_textarea_div {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%;
-  height: auto;
 }
 
 .chat_input_textarea {
@@ -29,17 +24,32 @@
   max-height: 144px;
   font-weight: 500;
   font-size: 14px;
-  line-height: 20px;
+  line-height: 24px;
   width: 85%;
+  padding: 16px 10px;
   text-align: left;
   border: none;
-  padding: 16px 12px;
   background: transparent;
   scroll-behavior: smooth;
   scrollbar-width: none;
   -ms-overflow-style: none;
   word-wrap: break-word;
   white-space: pre-wrap;
+  /* Fix for placeholder positioning */
+  vertical-align: top;
+  
+  /* Ensure placeholder stays in correct position */
+  &::placeholder {
+    line-height: 24px;
+    /* Prevent placeholder from being affected by scroll */
+    position: relative;
+    top: 0;
+  }
+  
+  /* Ensure no margin/padding shifts */
+  &:empty {
+    padding: 16px 10px;
+  }
 }
 
 .chat_input_textarea::-webkit-scrollbar {

@@ -4,7 +4,7 @@
 import type React from "react"
 import Image from "next/image"
 import styles from "./chatInput.module.scss"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import sendIconDisable from "../../../../public/icons/send-icon-disable.svg";
 import sendIcon from "../../../../public/icons/send.svg";
 
@@ -51,50 +51,81 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
     }
   }
 
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const currentText = e.target.value
-    const textarea = textareaRef.current
+  const updateTextareaHeight = (textarea: HTMLTextAreaElement, text: string) => {
     const mainDiv = mainDivRef.current
+    
+    if (!mainDiv) return
 
-    setHasUserScrolled(false)
-    setShowScrollbar(false)
+    const canvas = document.createElement("canvas")
+    const context = canvas.getContext("2d")
 
-    if (textarea && mainDiv) {
-      const canvas = document.createElement("canvas")
-      const context = canvas.getContext("2d")
-      if (context) {
-        // Set font properties to match textarea
-        context.font = "500 15px system-ui, -apple-system, sans-serif"
+    if (context) {
+      context.font = "14px Manrope, sans-serif"
+      const textWidth = context.measureText(text).width
+      const availableWidth = textarea.clientWidth - 20
 
-        // Measure actual text width
-        const textWidth = context.measureText(currentText).width
-        const availableWidth = textarea.clientWidth - 24 // Account for padding
+      const baseHeight = 50
+      const lineHeight = 24
+      const maxHeight = 144
 
-        const baseHeight = 50
-        const lineHeight = 22
-
-        if (currentText.trim() === "") {
-          // Empty input
-          textarea.style.height = `${baseHeight}px`
-          mainDiv.style.height = "64px"
-        } else if (textWidth <= availableWidth) {
-          // Text fits in single line - keep base height
-          textarea.style.height = `${baseHeight}px`
-          mainDiv.style.height = "64px"
+      if (text.trim() === "") {
+        // Empty - reset to base height
+        textarea.style.height = `${baseHeight}px`
+        mainDiv.style.height = "64px"
+        
+        // Reset scroll and scrollbar when empty
+        textarea.scrollTop = 0
+        setShowScrollbar(false)
+        setHasUserScrolled(false)
+      } else if (textWidth <= availableWidth) {
+        // Single line
+        textarea.style.height = `${baseHeight}px`
+        mainDiv.style.height = "64px"
+        
+        // Reset scroll for single line
+        textarea.scrollTop = 0
+        setShowScrollbar(false)
+        setHasUserScrolled(false)
+      } else {
+        // Multiple lines
+        const estimatedLines = Math.ceil(textWidth / availableWidth)
+        const calculatedHeight = baseHeight + (estimatedLines - 1) * lineHeight
+        const newHeight = Math.min(calculatedHeight, maxHeight)
+        
+        textarea.style.height = `${newHeight}px`
+        mainDiv.style.height = `${newHeight + 14}px`
+        
+        // Only show scrollbar if content exceeds max height
+        if (calculatedHeight > maxHeight) {
+          // Content is taller than max height - scrollbar needed
+          if (!hasUserScrolled) {
+            textarea.scrollTop = textarea.scrollHeight
+          }
         } else {
-          // Text needs to wrap - calculate required lines
-          const estimatedLines = Math.ceil(textWidth / availableWidth)
-          const newHeight = Math.min(baseHeight + (estimatedLines - 1) * lineHeight, 144)
-          textarea.style.height = `${newHeight}px`
-          mainDiv.style.height = `${newHeight + 14}px`
+          // Content fits without scrolling
+          textarea.scrollTop = 0
+          setShowScrollbar(false)
+          setHasUserScrolled(false)
         }
-      }
-
-      if (!hasUserScrolled) {
-        textarea.scrollTop = textarea.scrollHeight
       }
     }
   }
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const currentText = e.target.value
+    const textarea = textareaRef.current
+
+    if (textarea) {
+      updateTextareaHeight(textarea, currentText)
+    }
+  }
+
+  // Use effect to handle programmatic value changes (like suggestions)
+  useEffect(() => {
+    if (textareaRef.current) {
+      updateTextareaHeight(textareaRef.current, value)
+    }
+  }, [value])
 
   const handleSend = () => {
     onSend()
@@ -108,6 +139,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
     if (textarea && mainDiv) {
       textarea.style.height = "50px"
       mainDiv.style.height = "64px"
+      textarea.scrollTop = 0
     }
   }
 
@@ -117,89 +149,79 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
         const textarea = textareaRef.current
         const mainDiv = mainDivRef.current
 
-        setHasUserScrolled(false)
-        setShowScrollbar(false)
-
         if (mainDiv) {
           const currentText = textarea.value
-
           const canvas = document.createElement("canvas")
           const context = canvas.getContext("2d")
+          
           if (context) {
-            context.font = "500 15px system-ui, -apple-system, sans-serif"
+            context.font = "14px Manrope, sans-serif"
             const textWidth = context.measureText(currentText).width
-            const availableWidth = textarea.clientWidth - 24
+            const availableWidth = textarea.clientWidth - 20
 
             const baseHeight = 50
-            const lineHeight = 22
+            const lineHeight = 24
+            const maxHeight = 144
 
             if (currentText.trim() === "") {
               textarea.style.height = `${baseHeight}px`
               mainDiv.style.height = "64px"
+              textarea.scrollTop = 0
+              setShowScrollbar(false)
             } else if (textWidth <= availableWidth) {
               textarea.style.height = `${baseHeight}px`
               mainDiv.style.height = "64px"
+              textarea.scrollTop = 0
+              setShowScrollbar(false)
             } else {
               const estimatedLines = Math.ceil(textWidth / availableWidth)
-              const newHeight = Math.min(baseHeight + (estimatedLines - 1) * lineHeight, 144)
+              const calculatedHeight = baseHeight + (estimatedLines - 1) * lineHeight
+              const newHeight = Math.min(calculatedHeight, maxHeight)
+              
               textarea.style.height = `${newHeight}px`
               mainDiv.style.height = `${newHeight + 14}px`
+              
+              // Only scroll to top if content doesn't exceed max height
+              if (calculatedHeight <= maxHeight) {
+                textarea.scrollTop = 0
+                setShowScrollbar(false)
+              }
             }
           }
-
-          textarea.scrollTop = 0
         }
       }
     }, 0)
   }
 
-  // const characterCount = currentInput?.length
-  // const isNearLimit = characterCount > 250
-  // const isAtLimit = characterCount >= 300
-
   return (
     <main ref={mainDivRef} className={styles["chat_input_main_div"]}>
-      <div className={styles["chat_input_textarea_div"]}>
-        <textarea
-          ref={textareaRef}
-          // onInput={handleInput}
-          // onFocus={handleInput}
-          onPaste={handlePaste}
-          onScroll={handleScroll}
-          value={value}
+      <textarea
+        ref={textareaRef}
+        onPaste={handlePaste}
+        onScroll={handleScroll}
+        value={value}
         onChange={(e) => {
-            onChange(e.target.value)
-            setCurrentInput(e.target.value)
-            handleInput(e)
-          }}
-          placeholder="ask me anything..."
-          className={`${styles["chat_input_textarea"]} ${showScrollbar ? styles["show_scrollbar"] : ""}`}
-          onKeyUp={handleKeyPress}
-          disabled={disabled}
-          aria-label="Chat message input"
-          aria-describedby="char-count"
-          id="chat-input"
-          // maxLength={300}
-        />
-        <div className={styles["chat_input_button_div"]}>
-          <button onClick={handleSend} disabled={disabled || !value.trim()} aria-label="Send message">
-            {disabled ? (
-              <Image src={sendIconDisable || "/placeholder.svg"} alt="Send" width={40} height={40} />
-            ) : (
-              <Image src={sendIcon || "/placeholder.svg"} alt="Send" width={40} height={40} />
-            )}
-          </button>
-        </div>
+          onChange(e.target.value)
+          setCurrentInput(e.target.value)
+          handleInput(e)
+        }}
+        placeholder="ask me anything..."
+        className={`${styles["chat_input_textarea"]} ${showScrollbar ? styles["show_scrollbar"] : ""}`}
+        onKeyUp={handleKeyPress}
+        disabled={disabled}
+        aria-label="Chat message input"
+        aria-describedby="char-count"
+        id="chat-input"
+      />
+      <div className={styles["chat_input_button_div"]}>
+        <button onClick={handleSend} disabled={disabled || !value.trim()} aria-label="Send message">
+          {disabled ? (
+            <Image src={sendIconDisable || "/placeholder.svg"} alt="Send" width={40} height={40} />
+          ) : (
+            <Image src={sendIcon || "/placeholder.svg"} alt="Send" width={40} height={40} />
+          )}
+        </button>
       </div>
-
-      {/* {characterCount > 0 && (
-        <div
-          id="char-count"
-          className={`${styles["char_count"]} ${isNearLimit ? styles["char_count_warning"] : ""} ${isAtLimit ? styles["char_count_limit"] : ""}`}
-        >
-          {characterCount}/300
-        </div>
-      )} */}
     </main>
   )
 }

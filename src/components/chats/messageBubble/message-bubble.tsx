@@ -47,19 +47,21 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
         {/* Main Response Text */}
         <div className={styles["bot_text_message"]}>
-          <p className="mb-4" style={{ fontSize: "14px" }}>{agentResponse.response}</p>
-        
-          {/* Visualizations */}
-          {agentResponse.data?.visualizations && 
-           agentResponse.data.visualizations.length > 0 && (
-            <div className="mt-4 space-y-2 w-full">
-              {agentResponse.data.visualizations.map((viz, index) => (
-                <VisualizationRenderer key={index} visualization={viz} />
-              ))}
-            </div>
-          )}
+          <p className="mb-4" style={{ fontSize: "14px" }}>
+            {agentResponse.response}
+          </p>
 
-         {agentResponse.data?.recommendations && 
+          {/* Visualizations */}
+          {agentResponse.data?.visualizations &&
+            agentResponse.data.visualizations.length > 0 && (
+              <div className="mt-4 space-y-2 w-full">
+                {agentResponse.data.visualizations.map((viz, index) => (
+                  <VisualizationRenderer key={index} visualization={viz} />
+                ))}
+              </div>
+            )}
+
+          {/* {agentResponse.data?.recommendations && 
            agentResponse.data.recommendations.length > 0 && (
             <div className="mt-4">
               <h2 className="font-semibold mb-2">Recommendations:</h2>
@@ -83,26 +85,59 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                 })}
               </ol>
             </div>
-          )}
+          )} */}
+
+          {agentResponse.data?.recommendations &&
+            agentResponse.data.recommendations.length > 0 && (
+              <div className="mt-4">
+                <h2 className="font-semibold mb-2">Recommendations:</h2>
+                <ol className="list-decimal list-inside space-y-3 ml-2">
+                  {agentResponse.data.recommendations.map((rec, index) => {
+                    const match = rec.match(/\*\*(.*?)\*\*[:\-]?\s*(.*)/);
+                    const heading = match ? match[1] : rec;
+                    const description = match ? match[2] : "";
+                    if (match) {
+                      return (
+                        <li key={index}>
+                          <span className="font-semibold">{heading}</span>
+                          {description && (
+                            <p className="text-gray-700">{description}</p>
+                          )}
+                        </li>
+                      );
+                    } else {
+                      return (
+                        <li key={index} style={{ fontSize: "14px" }}>
+                          {rec}
+                        </li>
+                      );
+                    }
+                  })}
+                </ol>
+              </div>
+            )}
 
           {/* Next Question */}
           {agentResponse.data?.next_question && (
             <div className="mt-4">
               {/* <h1 className="font-semibold mb-2 text-grey-500 text-sm">Next Question:</h1> */}
-            <p className="mt-4 font-semibold text-grey-500">
-              {agentResponse.data.next_question}
-            </p>
+              <p className="mt-4 font-semibold text-grey-500">
+                {agentResponse.data.next_question}
+              </p>
             </div>
           )}
         </div>
-
       </div>
     </main>
   );
 }
 
 // Component to render different visualization types
-function VisualizationRenderer({ visualization }: { visualization: Visualization }) {
+function VisualizationRenderer({
+  visualization,
+}: {
+  visualization: Visualization;
+}) {
   if (isProgressVisualization(visualization)) {
     return (
       <ProgressChart
@@ -113,50 +148,51 @@ function VisualizationRenderer({ visualization }: { visualization: Visualization
   }
 
   if (isBarVisualization(visualization)) {
-  // Check if we have multiple datasets (comparison mode)
-  if (visualization.data.datasets.length > 1) {
-    // Transform for grouped bar chart
-    const comparisonData = visualization.data.x_axis.values.map((label, index) => {
-      const dataPoint: any = { name: label };
-      
-      // Add each dataset as a separate key
-      visualization.data.datasets.forEach((dataset) => {
-        dataPoint[dataset.label] = dataset.data[index];
-      });
-      
-      return dataPoint;
-    });
+    // Check if we have multiple datasets (comparison mode)
+    if (visualization.data.datasets.length > 1) {
+      // Transform for grouped bar chart
+      const comparisonData = visualization.data.x_axis.values.map(
+        (label, index) => {
+          const dataPoint: any = { name: label };
 
-    return (
-      <ComparisonBarChart
-        data={comparisonData}
-        datasets={visualization.data.datasets}
-        title={visualization.title}
-        xAxisLabel={visualization.data.x_axis.label}
-        yAxisLabel={visualization.data.y_axis.label}
-      />
-    );
-  } else {
-    // Single dataset - existing code
-    console.log("Single Dataset Bar Chart Data:", visualization.data);
-    const barData = visualization.data.x_axis.values.map((label, index) => ({
-      name: label,
-      value: visualization.data.datasets[0].data[index],
-    }));
+          // Add each dataset as a separate key
+          visualization.data.datasets.forEach((dataset) => {
+            dataPoint[dataset.label] = dataset.data[index];
+          });
 
-    console.log("Transformed Bar Chart Data:", barData);
+          return dataPoint;
+        }
+      );
 
-    return (
-      <BarChartComponent
-        data={barData}
-        dataset={visualization.data.datasets}
-        title={visualization.title}
-        xAxisLabel={visualization.data.x_axis.label}
-        yAxisLabel={visualization.data.y_axis.label}
-      />
-    );
+      return (
+        <ComparisonBarChart
+          data={comparisonData}
+          datasets={visualization.data.datasets}
+          title={visualization.title}
+          xAxisLabel={visualization.data.x_axis.label}
+          yAxisLabel={visualization.data.y_axis.label}
+        />
+      );
+    } else {
+      // Single dataset - existing code
+      const barData = visualization.data.x_axis.values.map((label, index) => ({
+        name: label,
+        value: visualization.data.datasets[0].data[index],
+      }));
+
+      console.log("Transformed Bar Chart Data:", barData);
+
+      return (
+        <BarChartComponent
+          data={barData}
+          dataset={visualization.data.datasets}
+          title={visualization.title}
+          xAxisLabel={visualization.data.x_axis.label}
+          yAxisLabel={visualization.data.y_axis.label}
+        />
+      );
+    }
   }
-}
 
   if (isPieVisualization(visualization)) {
     // Transform pie visualization data to component format
@@ -166,22 +202,15 @@ function VisualizationRenderer({ visualization }: { visualization: Visualization
       color: visualization.data.colors[index],
     }));
 
-    return (
-      <PieChartComponent
-        data={pieData}
-        title={visualization.title}
-      />
-    );
+    return <PieChartComponent data={pieData} title={visualization.title} />;
   }
 
   if (isTableVisualization(visualization)) {
-    const tableData = {columns: visualization.data.columns, rows: visualization.data.rows};
-    return (
-      <DataTable 
-        data={tableData} 
-        title={visualization.title} 
-      />
-    );
+    const tableData = {
+      columns: visualization.data.columns,
+      rows: visualization.data.rows,
+    };
+    return <DataTable data={tableData} title={visualization.title} />;
   }
   return null;
 }
