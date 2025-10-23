@@ -30,6 +30,8 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !disabled) {
+      e.preventDefault();
+      setShowScrollbar(false);
       handleSend()
     }
   }

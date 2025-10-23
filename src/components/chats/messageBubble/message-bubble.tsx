@@ -207,7 +207,7 @@ function VisualizationRenderer({
 
   if (isTableVisualization(visualization)) {
     const tableData = {
-      columns: visualization.data.columns,
+      columns: visualization.data.columns || visualization.data.headers,
       rows: visualization.data.rows,
     };
     return <DataTable data={tableData} title={visualization.title} />;

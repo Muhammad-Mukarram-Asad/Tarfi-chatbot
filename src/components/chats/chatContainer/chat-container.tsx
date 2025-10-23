@@ -23,7 +23,7 @@ export function ChatContainer() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSidePanel, setShowSidePanel] = useState(false);
-  const { isConnected, sendMessage} = useSocket(); // Use the custom hook for Socket.IO
+  const { isConnected, sendMessage, closeSocket} = useSocket(); // Use the custom hook for Socket.IO
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading || !isConnected) return;
@@ -144,6 +144,7 @@ export function ChatContainer() {
             handleNewChat={() => {
               setMessages([]);
               setShowSidePanel(false);
+              closeSocket();
             }}
           />
         )}

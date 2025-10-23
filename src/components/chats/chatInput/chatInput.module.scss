@@ -71,10 +71,10 @@
   background: rgba(34, 211, 238, 0.5);
 }
 
-.chat_input_textarea.show_scrollbar {
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
+// .chat_input_textarea.show_scrollbar {
+//   overflow-y: auto;
+//   scrollbar-width: thin;
+// }
 
 .chat_input_textarea.show_scrollbar::-webkit-scrollbar {
   opacity: 1;

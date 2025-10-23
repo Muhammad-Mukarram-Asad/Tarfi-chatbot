@@ -52,7 +52,13 @@ useEffect(() => {
       // Server initiated disconnect - need to manually reconnect
       socket.connect();
     }
+
+    if(reason == 'io client disconnect') {
+      // Client initiated disconnect - need to manually reconnect
+      socket.connect();
+    }
   });
+
 
   socket.on("connect_error", (error) => {
     console.error("🔴 Connection error:", error.message);
@@ -230,9 +236,16 @@ useEffect(() => {
     });
   };
 
+  const closeSocket = () => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+    }
+  };
+
   return {
     isConnected,
     sendMessage,
+    closeSocket,
     socket: socketRef.current,
   };
 };

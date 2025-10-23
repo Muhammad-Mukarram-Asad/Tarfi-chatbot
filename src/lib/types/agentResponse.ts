@@ -70,6 +70,7 @@ export interface TableVisualization {
   title: string;  // e.g., "Monthly Expenses Breakdown (Average for Last 3 Months)"
   data: {
     columns: string[];  // e.g., ["Category", "Average Monthly Expense (PKR)", "Percentage of Total"]
+    headers: string[];
     rows: Array<string[]>;  // e.g., 0 : (3) ['Travel', 42636, '21.5%']
   };
 }
