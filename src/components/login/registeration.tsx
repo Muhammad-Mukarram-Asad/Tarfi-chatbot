@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 
 import React, { useState } from "react";
@@ -5,24 +6,20 @@ import styles from "./registration.module.scss";
 import { ChatContainer } from "@/components/chats/chatContainer/chat-container";
 
 const Registration: React.FC = () => {
-  const [consumerId, setConsumerId] = useState("");
+  const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
   const [openChatContainer, setOpenChatContainer] = useState(false);
 
-  const registerWithConsumerId = async () => {
-    if (!consumerId.trim()) {
-      alert("Please enter a consumer ID");
-      return;
-    }
-    
+  const userLogin = async () => {
+    if(userName === "") return alert("Please enter valid name");
     setLoading(true);
-    
     try {
       // Simulate API call
       setTimeout(() => {
-        setOpenChatContainer(true);
         setLoading(false);
+        setOpenChatContainer(true);
       }, 2000);
+      typeof window !== "undefined" && window?.sessionStorage?.setItem("userName", userName); 
     } catch (error) {
       console.error("Registration failed:", error);
       setLoading(false);
@@ -31,7 +28,7 @@ const Registration: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    registerWithConsumerId();
+    userLogin();
   };
 
   if (openChatContainer) {
@@ -48,25 +45,26 @@ const Registration: React.FC = () => {
       {!loading && (
         <div className={styles.consumerRegistrationForm}>
           <div className={styles.container}>
-            <h1>Customer Registration</h1>
+            <h1>User Login</h1>
             <form onSubmit={handleSubmit}>
               <div className={styles.row}>
                 <div className={styles["col-25"]}>
-                  <label htmlFor="consumerId">Enter your consumer id:</label>
+                  <label htmlFor="userName">Enter your sweet name:</label>
                 </div>
                 <div className={styles["col-75"]}>
                   <input
-                    id="consumerId"
+                    id="name"
                     type="text"
-                    pattern="[0-9]*"
-                    value={consumerId}
-                    onChange={(e) => setConsumerId(e.target.value)}
+                    pattern="[A-Za-z]{3,20}"
+                    placeholder="Your Name.."
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                     required
                   />
                 </div>
               </div>
               <div className={styles.row}>
-                <input type="submit" value="Register" />
+                <input type="submit" value="Login" />
               </div>
             </form>
           </div>

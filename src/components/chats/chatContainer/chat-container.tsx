@@ -12,18 +12,19 @@ import { useSocket } from "@/hooks/useSocket"; // Import the socket hook
 import { Message, UserMessage, BotMessage } from "@/lib/types/agentResponse";
 
 const suggestionsList = [
-  "Show me a table of my monthly expenses.",
   "Tell me how to make an emergency fund?",
   "How can I buy a car at 23 years?",
-  "What is the best way to save for retirement?",
+  "Create a pie chart of my spending categories.",
+  "Generate a bar chart comparing my income vs expenses.",
 ];
 
 export function ChatContainer() {
+  // const [toggleTheme, setToggleTheme] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSidePanel, setShowSidePanel] = useState(false);
-  const { isConnected, sendMessage, closeSocket} = useSocket(); // Use the custom hook for Socket.IO
+  const { isConnected, sendMessage, closeSocket } = useSocket(); // Use the custom hook for Socket.IO
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading || !isConnected) return;
@@ -75,6 +76,7 @@ export function ChatContainer() {
   };
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const loginUserName = typeof window !== "undefined" ? window?.sessionStorage?.getItem("userName") : "User";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,10 +103,8 @@ export function ChatContainer() {
   }, [messages]);
 
   const waiting = [
-    "Thinking...",
-    "Analyzing...",
-    "Processing...",
-    "Giving you results...",
+    "AI is thinking",
+    "Generating response...",
   ];
 
   const [currentMessage, setCurrentMessage] = useState<string>("");
@@ -123,7 +123,7 @@ export function ChatContainer() {
         currentIndex =
           currentIndex === waiting.length - 1 ? 0 : currentIndex + 1;
         setCurrentMessage(waiting[currentIndex]);
-      }, 5000);
+      }, 10000);
     }
     // Cleanup interval on unmount or when isLoading changes
     return () => {
@@ -153,7 +153,13 @@ export function ChatContainer() {
       <main
         className={
           styles[
-            showSidePanel
+            // showSidePanel && toggleTheme === false
+            //   ? "blur_chat_container_main_div"
+            //   :  showSidePanel && toggleTheme === true ? "blur_chat_container_main_div_dark" :
+            //   toggleTheme === true
+            //   ? "chat_container_main_div_dark"
+            //   : "chat_container_main_div"
+             showSidePanel
               ? "blur_chat_container_main_div"
               : "chat_container_main_div"
           ]
@@ -182,9 +188,9 @@ export function ChatContainer() {
           <section className={styles["initial_message_section"]}>
             <div className={styles["initial_message_container"]}>
               <p className={styles["initial_message_text"]}>
-                Hi there! What can I help you with today Sara? Are you looking
+                Hi there! What can I help you with today {loginUserName}? Are you looking
                 to optimize your budgets or do you want to see your overall
-                finances
+                finances?
               </p>
             </div>
 

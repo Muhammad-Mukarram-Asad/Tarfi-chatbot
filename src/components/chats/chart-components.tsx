@@ -356,7 +356,7 @@ export function ComparisonBarChart({
             zIndex: 10,
           }}
         >
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" style={{ pointerEvents: "none" }}>
             <BarChart
               data={data}
               margin={{ top: 20, right: 0, bottom: 60, left: 0 }}
@@ -405,7 +405,7 @@ export function ComparisonBarChart({
           }}
         >
           <div style={{ width: `${chartWidth}px`, height: "100%" }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" style={{ pointerEvents: "none" }}>
               <BarChart
                 data={data}
                 margin={{ top: 20, right: 20, bottom: 60, left: 0 }}

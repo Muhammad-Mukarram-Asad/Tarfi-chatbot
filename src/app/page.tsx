@@ -1,6 +1,6 @@
 "use client";
 
-import Registration from "../components/login/onboarding-consumer";
+import Registration from "@/components/login/registeration";
 
 export default function Home() {
   return (

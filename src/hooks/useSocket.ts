@@ -249,3 +249,288 @@ useEffect(() => {
     socket: socketRef.current,
   };
 };
+
+// "use client";
+
+// import { useEffect, useRef, useState } from "react";
+// import { io, Socket } from "socket.io-client";
+// import { BotMessage, parseAgentResponse } from "@/lib/types/agentResponse";
+
+// const SOCKET_URL = "http://localhost:8000";
+
+// type StreamHandlers = {
+//   onProcessing?: (data: any) => void;
+//   onAgentUpdate?: (data: any) => void;
+//   onChunk?: (chunk: string, agent?: string) => void;
+//   onDone?: () => void;
+//   onError?: (error: any) => void;
+// };
+
+// export const useSocket = () => {
+//   const [isConnected, setIsConnected] = useState(false);
+//   const [isStreaming, setIsStreaming] = useState(false);
+//   const [streamText, setStreamText] = useState("");   // live, incremental text
+//   const [streamAgent, setStreamAgent] = useState<string | null>(null);
+
+//   const socketRef = useRef<Socket | null>(null);
+
+//   // keep stable listener refs so .off() works correctly
+//   const listenersRef = useRef({
+//     processing: null as ((data: any) => void) | null,
+//     agent_update: null as ((data: any) => void) | null,
+//     response_chunk: null as ((data: any) => void) | null,
+//     response: null as ((data: any) => void) | null,
+//     error: null as ((data: any) => void) | null,
+//     get_stream_adapter: null as ((data: any) => void) | null,
+//   });
+
+//   useEffect(() => {
+//     // reuse if already connected
+//     if (socketRef.current?.connected) {
+//       console.log("socket already connected, reusing", socketRef.current.id);
+//       setIsConnected(true);
+//       return;
+//     }
+
+//     // clean any stale socket
+//     if (socketRef.current) {
+//       socketRef.current.removeAllListeners();
+//       socketRef.current.disconnect();
+//       socketRef.current = null;
+//     }
+
+//     const s = io(SOCKET_URL, {
+//       path: "/socket.io",
+//       transports: ["websocket", "polling"],
+//       reconnection: true,
+//       reconnectionAttempts: 10,
+//       reconnectionDelay: 1000,
+//       reconnectionDelayMax: 5000,
+//       timeout: 20000,
+//       autoConnect: true,
+//     });
+
+//     socketRef.current = s;
+
+//     s.on("connect", () => {
+//       console.log("✅ connected:", s.id);
+//       setIsConnected(true);
+//     });
+
+//     s.on("disconnect", (reason) => {
+//       console.log("❌ disconnected:", reason);
+//       setIsConnected(false);
+//       if (reason === "io server disconnect" || reason === "io client disconnect") {
+//         s.connect();
+//       }
+//     });
+
+//     s.on("connect_error", (err) => {
+//       console.error("🔴 connect_error:", err.message);
+//       setIsConnected(false);
+//     });
+
+//     s.on("reconnect_attempt", (n) => console.log("🔄 reconnect attempt", n));
+//     s.on("reconnect", (n) => {
+//       console.log("✅ reconnected after", n, "attempts");
+//       setIsConnected(true);
+//     });
+//     s.on("reconnect_failed", () => console.error("❌ reconnect failed"));
+
+//     // optional: wired from your server
+//     s.on("connected", (d) => console.log("📝 session created:", d));
+//     s.on("session_recovered", (d) => console.log("🔄 session recovered:", d));
+//     s.on("pong", (d) => console.log("🏓 pong:", d));
+
+//     return () => {
+//       console.log("🧹 cleaning socket");
+//       // remove our named listeners (defensive)
+//       Object.entries(listenersRef.current).forEach(([evt, fn]) => {
+//         if (fn && s) s.off(evt, fn as any);
+//       });
+//       s.removeAllListeners();
+//       s.disconnect();
+//     };
+//   }, []);
+
+
+
+//   /**
+//    * sendMessage now accepts optional per-message stream handlers.
+//    * it still resolves to a final BotMessage for your chat history.
+//    */
+//   const sendMessage = (
+//     message: string,
+//     handlers?: StreamHandlers
+//   ): Promise<BotMessage> => {
+//     return new Promise((resolve, reject) => {
+//       const socket = socketRef.current;
+//       if (!socket || !socket.connected) {
+//         reject(new Error("Socket not connected"));
+//         return;
+//       }
+
+//       console.log("📤 sending to server:", message);
+
+//       // reset live stream state for this turn
+//       setIsStreaming(true);
+//       setStreamText("");
+//       setStreamAgent(null);
+
+//       // ------ define named handlers so we can .off() them later
+
+//       // processing
+//       const handleProcessing = (data: any) => {
+//         handlers?.onProcessing?.(data);
+//         // optional: show spinner etc.
+//         console.log("processing:", data);
+//       };
+
+//       // agent updates (routing)
+//       const handleAgentUpdate = (data: any) => {
+//         setStreamAgent(data?.agent ?? data?.to_agent ?? null);
+//         handlers?.onAgentUpdate?.(data);
+//         console.log("agent_update:", data);
+//       };
+
+//       // streaming chunks
+//       const handleResponseChunk = (data: any) => {
+//         const chunk = typeof data?.chunk === "string" ? data.chunk : "";
+//         console.log("response_chunk:", chunk);
+//         const agent = data?.agent;
+//         console.log("chunk agent:", agent);
+//         if (chunk) {
+//           setStreamText((prev) => prev + chunk);
+//           handlers?.onChunk?.(chunk, agent);
+//         }
+//         if (agent) setStreamAgent(agent);
+//       };
+
+//       // final response (complete)
+//       const handleResponse = (data: any) => {
+//         // parse final payload to BotMessage
+//         try {
+//           let agentResponse: any;
+//           console.log("type of data.response:", typeof data.response);
+//           console.log("data.response:", data);
+
+//           if (typeof data.response === "string") {
+//             agentResponse = parseAgentResponse(data.response);
+//           } else if (typeof data.response === "object") {
+//             agentResponse = data.response;
+//           } else {
+//             throw new Error("Invalid response format from server");
+//           }
+
+//           console.log("agentResponse:", agentResponse);
+
+//           const agentType = data?.agent || streamAgent || "general";
+
+//           const botMessage: BotMessage = {
+//             type: agentType,
+//             isUser: false,
+//             color: "border-b border-b-gray-300",
+//             bgcolor: "bg-white",
+//             agentResponse,
+//           };
+
+//           handlers?.onDone?.();
+//           setIsStreaming(false);
+
+//           cleanupListeners();
+//           clearTimeout(timeout);
+//           resolve(botMessage);
+//         } catch (err) {
+//           handleError(err);
+//         }
+//       };
+
+//       // error
+//       const handleError = (errorData: any) => {
+//         const err =
+//           errorData instanceof Error
+//             ? errorData
+//             : new Error(errorData?.message || errorData?.error || "Unknown error");
+
+//         handlers?.onError?.(err);
+//         setIsStreaming(false);
+
+//         cleanupListeners();
+//         clearTimeout(timeout);
+//         reject(err);
+//       };
+
+//       // optional: debug/info
+//       const handleStreamInfo = (data: any) => {
+//         console.log("ℹ️ stream adapter info:", data);
+//       };
+
+//       // ------- register (use .on vs .once for chunks)
+//       socket.on("processing", handleProcessing);
+//       socket.on("agent_update", handleAgentUpdate);
+//       socket.on("response_chunk", handleResponseChunk); // stream
+//       socket.once("response", handleResponse);          // final
+//       socket.once("error", handleError);
+//       socket.on("get_stream_adapter", handleStreamInfo);
+
+//       // keep references so we can off() in cleanup
+//       listenersRef.current.processing = handleProcessing;
+//       listenersRef.current.agent_update = handleAgentUpdate;
+//       listenersRef.current.response_chunk = handleResponseChunk;
+//       listenersRef.current.response = handleResponse;
+//       listenersRef.current.error = handleError;
+//       listenersRef.current.get_stream_adapter = handleStreamInfo;
+
+//       // ------- emit user chat
+//       socket.emit("chat", { message });
+
+//       // ------- timeout guard
+//       const timeout = setTimeout(() => {
+//         handleError(new Error("Response timeout - server took too long to respond"));
+//       }, 60000);
+
+//       // ------- local cleanup helper
+//       function cleanupListeners() {
+//         if (!socket) return;
+//         const l = listenersRef.current;
+//         if (l.processing) socket.off("processing", l.processing);
+//         if (l.agent_update) socket.off("agent_update", l.agent_update);
+//         if (l.response_chunk) socket.off("response_chunk", l.response_chunk);
+//         if (l.response) socket.off("response", l.response);
+//         if (l.error) socket.off("error", l.error);
+//         if (l.get_stream_adapter)
+//           socket.off("get_stream_adapter", l.get_stream_adapter);
+
+//         // reset refs
+//         listenersRef.current = {
+//           processing: null,
+//           agent_update: null,
+//           response_chunk: null,
+//           response: null,
+//           error: null,
+//           get_stream_adapter: null,
+//         };
+//       }
+//     });
+//   };
+
+//   const closeSocket = () => {
+//     if (socketRef.current) {
+//       // remove listeners before disconnect
+//       Object.entries(listenersRef.current).forEach(([evt, fn]) => {
+//         if (fn && socketRef.current) socketRef.current.off(evt, fn as any);
+//       });
+//       socketRef.current.disconnect();
+//     }
+//   };
+
+//   return {
+//     isConnected,
+//     isStreaming,
+//     streamText,   // live streaming text for UI
+//     streamAgent,  // current agent label for UI
+//     sendMessage,
+//     closeSocket,
+//     socket: socketRef.current,
+//   };
+// };

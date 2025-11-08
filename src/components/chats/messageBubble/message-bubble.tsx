@@ -61,32 +61,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               </div>
             )}
 
-          {/* {agentResponse.data?.recommendations && 
-           agentResponse.data.recommendations.length > 0 && (
-            <div className="mt-4">
-              <h2 className="font-semibold mb-2">Recommendations:</h2>
-              <ol className="list-decimal list-inside space-y-3 ml-2">
-                {agentResponse.data.recommendations.map((rec, index) => {
-                  // Split the recommendation into heading and description
-                  const match = rec.match(/^\d+\.\s\*\*(.*?)\*\*:\s(.+)$/);
-                  
-                  if (match) {
-                    const [, heading, description] = match;
-                    return (
-                      <li key={index} style={{fontSize: "14px"}}>
-                        <span className="font-bold">{heading}</span>
-                        <div className="mt-1 ml-5">{description}</div>
-                      </li>
-                    );
-                  }
-                  
-                  // Fallback if format doesn't match
-                  return <li key={index} style={{fontSize: "14px"}}>{rec}</li>;
-                })}
-              </ol>
-            </div>
-          )} */}
-
+          {/* Recommendations */}
           {agentResponse.data?.recommendations &&
             agentResponse.data.recommendations.length > 0 && (
               <div className="mt-4">
@@ -179,8 +154,6 @@ function VisualizationRenderer({
         name: label,
         value: visualization.data.datasets[0].data[index],
       }));
-
-      console.log("Transformed Bar Chart Data:", barData);
 
       return (
         <BarChartComponent
