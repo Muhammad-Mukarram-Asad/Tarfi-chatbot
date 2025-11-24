@@ -5,7 +5,7 @@ import menuIcon from "../../../../public/icons/menu-icon-header.svg"
 import { useState } from "react";
 export function ChatHeader(props:any) {
   const {onClick,toggleTheme, setToggleTheme} = props;
-  console.log("toggleTheme in chatHeader:", toggleTheme);
+  // console.log("toggleTheme in chatHeader:", toggleTheme);
   const [] = useState(false);
   return (
     <div className={styles["chat_header_main_div"]}>

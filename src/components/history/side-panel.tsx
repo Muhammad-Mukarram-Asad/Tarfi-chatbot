@@ -10,6 +10,7 @@ export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
     title: string;
   };
   const [filteredList, setFilteredList] = useState<chatType[]>([]);
+  const [showMore, setShowMore] = useState(false);
   const recentChatsHistory = [
     { id: 1, title: "Buying a home" },
     { id: 2, title: "Getting a car loan" },
@@ -65,14 +66,25 @@ export const HistoryScreen = ({ showSidePanel, handleNewChat }: any) => {
                 </div>
               );
             })
-          : recentChatsHistory?.map((chat) => {
+          : 
+          showMore ? 
+          recentChatsHistory?.map((chat) => {
               return (
                 <div key={chat.id} className={styles["history_list_chat_div"]}>
                   {chat.title}
                 </div>
               );
-            })}
-        <p>View more</p>
+            })
+          : recentChatsHistory
+              .slice(0, 5)
+              .map((chat) => {
+                return (
+                  <div key={chat.id} className={styles["history_list_chat_div"]}>
+                    {chat.title}
+                  </div>
+                );
+              })}
+        <p onClick={() => setShowMore(!showMore)}> {showMore ? "View less" : "View more"}</p>
       </section>
 
 
